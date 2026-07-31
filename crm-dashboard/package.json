@@ -1,0 +1,22 @@
+{
+  "name": "aiec-crm-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Internal AIEC Global CRM dashboard — leads, application status, and follow-up assistant. Requires login.",
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start -p 3002"
+  },
+  "dependencies": {
+    "next": "^16.2.12",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.4"
+  }
+}

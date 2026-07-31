@@ -1,0 +1,15 @@
+{
+  "name": "aiec-chat-widget",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Embeddable AI Counsellor chat widget for the AIEC Global website",
+  "main": "src/ChatWidget.tsx",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "typescript": "^5.5.4"
+  }
+}

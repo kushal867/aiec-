@@ -1,0 +1,116 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fff;
+  font-family: system-ui, -apple-system, sans-serif;
+  max-width: 420px;
+}
+
+.title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #777;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.slotHeader {
+  display: flex;
+  flex-direction: column;
+}
+
+.slotLabel {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.slotHint {
+  font-size: 11px;
+  color: #999;
+}
+
+.fileButton {
+  position: relative;
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  width: fit-content;
+  background: #f7f7f7;
+}
+
+.fileInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.fileName {
+  font-size: 11px;
+  color: #666;
+}
+
+.result {
+  margin-top: 4px;
+  padding: 8px 10px;
+  background: #f7f7f7;
+  border-radius: 8px;
+}
+
+.statusBadge {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.message {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #333;
+}
+
+.issues {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: #c0392b;
+}
+
+.checklistSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  background: #fff8e6;
+  border: 1px solid #f0dca0;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #7a5c00;
+}
+
+.checklistComplete {
+  padding: 8px 10px;
+  background: #eaf7ee;
+  border: 1px solid #b8e0c2;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #1a7d3a;
+}

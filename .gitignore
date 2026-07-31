@@ -1,0 +1,15 @@
+# Each sub-project (backend/, test-site/, crm-dashboard/) has its own
+# .gitignore for node_modules, .env files, build output, and — critically —
+# backend/data/ (real student data, JWT secret, uploaded documents). This
+# root file only covers things not already scoped to a sub-project.
+
+node_modules/
+dist/
+.next/
+*.tsbuildinfo
+
+# OS/editor cruft
+.DS_Store
+
+# Claude Code local settings are machine-specific, not shared config
+.claude/settings.local.json

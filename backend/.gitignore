@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+data/knowledge.db
+data/pdfs/*.pdf
+data/uploads/
+data/.jwt-secret
