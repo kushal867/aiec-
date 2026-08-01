@@ -1,6 +1,6 @@
 import json
 
-from app.db import create_user, upsert_student
+from app.db import assign_counsellor, create_user, upsert_student
 from app.services.auth import hash_password
 
 
@@ -30,6 +30,23 @@ def test_validation_failure_returns_400_with_error_key_not_422(client):
     r = client.post("/api/chat", json={"messages": [{"role": "system", "content": "hi"}]})
     assert r.status_code == 400
     assert "error" in r.json()
+
+
+# --- regression: the "error" field on a validation failure used to always
+# be the flat, unhelpful "Invalid request body" regardless of which field
+# failed or why — a real student's $2,000,000 budget hit the $1M cap and
+# the UI could only show "Invalid request body" with no indication why ---
+def test_validation_error_message_names_the_specific_field_and_reason(client):
+    r = client.post(
+        "/api/profile/analyze",
+        json={
+            "fullName": "Test", "gpa": 4.0, "ielts": 7.5, "budget": 2000000, "gap": 2,
+            "academicBackground": "bachelors", "migrationIntent": "undecided", "sessionId": "sess-budget",
+        },
+    )
+    assert r.status_code == 400
+    assert "budget" in r.json()["error"]
+    assert r.json()["error"] != "Invalid request body"
 
 
 # --- CORS: public routes and admin routes must get different allowed
@@ -186,3 +203,67 @@ def test_profile_analyze_and_pdf_export_roundtrip(client, seeded_courses):
     export = client.get("/api/profile/sess-export/export?format=pdf")
     assert export.status_code == 200
     assert export.headers["content-type"] == "application/pdf"
+
+
+# --- security regression: PATCH/POST /admin/leads/{id}/{notes,status,
+# contacted,followup} used to only check that *a* valid counsellor token was
+# presented, never that the lead was actually assigned to that counsellor —
+# a counsellor could read and modify (PII, notes, application status) any
+# lead in the system by guessing sequential integer ids. GET /admin/leads
+# already scoped correctly; the single-lead endpoints did not. ---
+def _unrelated_lead(test_db):
+    return upsert_student(
+        test_db,
+        {
+            "sessionId": "sess-other-counsellor", "name": "Not Yours", "email": None, "phone": None,
+            "gpa": 3.0, "ielts": 6.0, "budget": 10000, "gap": 0, "academicBackground": "bachelors",
+            "careerGoals": "", "migrationIntent": "undecided", "preferredCountry": "ANY",
+            "score": 5.0, "status": "Warm", "countries": "", "aiResponse": "", "nextSteps": "[]",
+            "suggestedCounsellorId": None,
+        },
+    )
+
+
+def test_counsellor_cannot_read_or_modify_a_lead_not_assigned_to_them(client, test_db):
+    counsellor_headers = _login(client, test_db, "counsellor")
+    other_counsellor_id = create_user(test_db, "Other", "other2@test.com", hash_password("x"), "counsellor")["id"]
+    lead = _unrelated_lead(test_db)
+    assign_counsellor(test_db, lead["id"], other_counsellor_id)  # explicitly someone else's lead
+
+    notes = client.patch(f"/api/admin/leads/{lead['id']}/notes", json={"notes": "snooping"}, headers=counsellor_headers)
+    assert notes.status_code == 404
+
+    status = client.patch(
+        f"/api/admin/leads/{lead['id']}/status", json={"applicationStatus": "rejected"}, headers=counsellor_headers
+    )
+    assert status.status_code == 404
+
+    contacted = client.post(f"/api/admin/leads/{lead['id']}/contacted", headers=counsellor_headers)
+    assert contacted.status_code == 404
+
+    followup = client.post(f"/api/admin/leads/{lead['id']}/followup", headers=counsellor_headers)
+    assert followup.status_code == 404
+
+    # confirm nothing was actually changed despite the requests
+    unchanged = test_db.execute("SELECT * FROM students WHERE id=?", (lead["id"],)).fetchone()
+    assert unchanged["counsellor_notes"] is None
+    assert unchanged["application_status"] == "not_started"
+
+
+def test_counsellor_can_still_modify_their_own_assigned_lead(client, test_db):
+    counsellor_headers = _login(client, test_db, "counsellor")
+    counsellor_id = test_db.execute("SELECT id FROM users WHERE role='counsellor'").fetchone()["id"]
+    lead = _unrelated_lead(test_db)
+    assign_counsellor(test_db, lead["id"], counsellor_id)
+
+    notes = client.patch(f"/api/admin/leads/{lead['id']}/notes", json={"notes": "Called today"}, headers=counsellor_headers)
+    assert notes.status_code == 200
+    assert notes.json()["lead"]["counsellorNotes"] == "Called today"
+
+
+def test_admin_is_never_scoped_and_can_modify_any_lead(client, test_db):
+    admin_headers = _login(client, test_db, "admin")
+    lead = _unrelated_lead(test_db)
+
+    notes = client.patch(f"/api/admin/leads/{lead['id']}/notes", json={"notes": "Admin note"}, headers=admin_headers)
+    assert notes.status_code == 200

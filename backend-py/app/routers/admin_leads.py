@@ -29,6 +29,23 @@ router = APIRouter()
 logger = logging.getLogger("aiec.admin_leads")
 
 
+def _get_lead_or_404_scoped(conn, lead_id: int, user: AuthTokenPayload) -> Any:
+    """Fetches a lead and enforces the same visibility rule GET /admin/leads
+    already applies (admins see everything; counsellors only their
+    assigned/suggested leads) — without this, a counsellor could read or
+    modify any other counsellor's leads by guessing a sequential lead_id,
+    bypassing the scoping that only existed on the list endpoint."""
+    student = get_student_by_id(conn, lead_id)
+    if not student:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    if user["role"] == "counsellor":
+        is_assigned_to_them = student["assigned_counsellor_id"] == user["userId"]
+        is_suggested_to_them = student["assigned_counsellor_id"] is None and student["suggested_counsellor_id"] == user["userId"]
+        if not (is_assigned_to_them or is_suggested_to_them):
+            raise HTTPException(status_code=404, detail="Lead not found")
+    return student
+
+
 def _serialize_student(row: Any) -> dict:
     documents = json.loads(row["documents"]) if row["documents"] else []
     return {
@@ -103,9 +120,9 @@ class NotesRequest(BaseModel):
 
 @router.patch("/admin/leads/{lead_id}/notes")
 def patch_notes(lead_id: int, body: NotesRequest, user: AuthTokenPayload = Depends(require_auth)):
-    updated = update_counsellor_notes(get_db(), lead_id, body.notes)
-    if not updated:
-        raise HTTPException(status_code=404, detail="Lead not found")
+    conn = get_db()
+    _get_lead_or_404_scoped(conn, lead_id, user)
+    updated = update_counsellor_notes(conn, lead_id, body.notes)
     return {"lead": _serialize_student(updated)}
 
 
@@ -120,9 +137,9 @@ class StatusRequest(BaseModel):
 @router.patch("/admin/leads/{lead_id}/status")
 def patch_status(lead_id: int, body: StatusRequest, user: AuthTokenPayload = Depends(require_auth)):
     body.validate_status()
-    updated = update_application_status(get_db(), lead_id, body.applicationStatus)
-    if not updated:
-        raise HTTPException(status_code=404, detail="Lead not found")
+    conn = get_db()
+    _get_lead_or_404_scoped(conn, lead_id, user)
+    updated = update_application_status(conn, lead_id, body.applicationStatus)
     return {"lead": _serialize_student(updated)}
 
 
@@ -157,19 +174,17 @@ def assign_lead(lead_id: int, body: AssignRequest, user: AuthTokenPayload = Depe
 
 @router.post("/admin/leads/{lead_id}/contacted")
 def contacted(lead_id: int, user: AuthTokenPayload = Depends(require_auth)):
-    updated = mark_contacted(get_db(), lead_id)
-    if not updated:
-        raise HTTPException(status_code=404, detail="Lead not found")
+    conn = get_db()
+    _get_lead_or_404_scoped(conn, lead_id, user)
+    updated = mark_contacted(conn, lead_id)
     return {"lead": _serialize_student(updated)}
 
 
-# On-demand only — never auto-generated in bulk (Claude call, see crm_assistant.py).
+# On-demand only — never auto-generated in bulk (see crm_assistant.py).
 @router.post("/admin/leads/{lead_id}/followup")
 def followup(lead_id: int, user: AuthTokenPayload = Depends(require_auth)):
     conn = get_db()
-    student = get_student_by_id(conn, lead_id)
-    if not student:
-        raise HTTPException(status_code=404, detail="Lead not found")
+    student = _get_lead_or_404_scoped(conn, lead_id, user)
 
     try:
         inactivity = check_inactivity(student)

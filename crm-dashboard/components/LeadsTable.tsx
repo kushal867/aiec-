@@ -34,6 +34,29 @@ function humanizeStatus(status: string): string {
   return status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// Every field used here is already loaded in the Lead object the dashboard
+// fetches for the table — no backend round-trip needed, this just assembles
+// what's already on screen into a ready-to-edit starting note instead of
+// making a counsellor type the same profile summary out by hand every time.
+function suggestCounsellorNote(lead: Lead): string {
+  const missingLabels = lead.documentChecklist.items
+    .filter((item) => lead.documentChecklist.missing.includes(item.documentType))
+    .map((item) => item.label);
+  const docsLine = lead.documentChecklist.complete
+    ? "Documents: all complete."
+    : `Documents: missing ${missingLabels.length > 0 ? missingLabels.join(", ") : "none tracked"}.`;
+
+  return [
+    `Profile: ${lead.academicBackground ? humanizeStatus(lead.academicBackground) : "background not specified"}, ` +
+      `GPA ${lead.gpa}/4.0, IELTS ${lead.ielts}/9.0, budget $${lead.budget.toLocaleString()}/year, ${lead.gap}y gap.`,
+    `Preferred country: ${lead.preferredCountry ?? "Any"}. Career goal: ${lead.careerGoals || "not specified"}.`,
+    `Migration intent: ${lead.migrationIntent ? humanizeStatus(lead.migrationIntent) : "not specified"}.`,
+    `Lead classification: ${lead.status} (${lead.score}/10). Conversion likelihood: ${lead.conversionPrediction.probability}% (${lead.conversionPrediction.likelihood}).`,
+    docsLine,
+    `Application status: ${lead.applicationStatus.label}.`,
+  ].join("\n");
+}
+
 function conversionColor(likelihood: Lead["conversionPrediction"]["likelihood"]): string {
   switch (likelihood) {
     case "Very Likely":
@@ -55,6 +78,7 @@ export function LeadsTable() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [notesDraft, setNotesDraft] = useState<Record<number, string>>({});
   const [busyId, setBusyId] = useState<number | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const { leads, isLoading, error, refetch } = useLeads({ status: filter, sort, inactiveOnly });
   const counsellors = useCounsellors();
 
@@ -75,63 +99,54 @@ export function LeadsTable() {
     return res.json();
   };
 
-  const saveNotes = async (id: number) => {
+  // Every admin action (notes, status, assign, contacted, follow-up
+  // generation) funnels through here so none of them can silently swallow a
+  // failure — previously each one only had a `finally` resetting the busy
+  // state, with no `catch` at all, so a failed request (e.g. a 404 from
+  // trying to act on a lead you're not assigned to) just made the button
+  // stop "Working..." with zero feedback, as if nothing had happened.
+  const runAction = async (id: number, action: () => Promise<unknown>) => {
     setBusyId(id);
+    setActionError(null);
     try {
-      await authedFetch(`/api/admin/leads/${id}/notes`, {
+      await action();
+      await refetch();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const saveNotes = (id: number) =>
+    runAction(id, () =>
+      authedFetch(`/api/admin/leads/${id}/notes`, {
         method: "PATCH",
         body: JSON.stringify({ notes: notesDraft[id] ?? "" }),
-      });
-      await refetch();
-    } finally {
-      setBusyId(null);
-    }
-  };
+      }),
+    );
 
-  const updateStatus = async (id: number, applicationStatus: ApplicationStatus) => {
-    setBusyId(id);
-    try {
-      await authedFetch(`/api/admin/leads/${id}/status`, {
+  const updateStatus = (id: number, applicationStatus: ApplicationStatus) =>
+    runAction(id, () =>
+      authedFetch(`/api/admin/leads/${id}/status`, {
         method: "PATCH",
         body: JSON.stringify({ applicationStatus }),
-      });
-      await refetch();
-    } finally {
-      setBusyId(null);
-    }
-  };
+      }),
+    );
 
-  const assign = async (id: number, counsellorId: number) => {
-    setBusyId(id);
-    try {
-      await authedFetch(`/api/admin/leads/${id}/assign`, {
+  const assign = (id: number, counsellorId: number) =>
+    runAction(id, () =>
+      authedFetch(`/api/admin/leads/${id}/assign`, {
         method: "POST",
         body: JSON.stringify({ counsellorId }),
-      });
-      await refetch();
-    } finally {
-      setBusyId(null);
-    }
-  };
+      }),
+    );
 
-  const markContacted = async (id: number) => {
-    setBusyId(id);
-    try {
-      await authedFetch(`/api/admin/leads/${id}/contacted`, { method: "POST" });
-      await refetch();
-    } finally {
-      setBusyId(null);
-    }
-  };
+  const markContacted = (id: number) =>
+    runAction(id, () => authedFetch(`/api/admin/leads/${id}/contacted`, { method: "POST" }));
 
-  const generateFollowup = async (id: number) => {
-    setBusyId(id);
-    try {
-      await authedFetch(`/api/admin/leads/${id}/followup`, { method: "POST" });
-      await refetch();
-    } finally {
-      setBusyId(null);
-    }
+  const generateFollowup = (id: number) => {
+    runAction(id, () => authedFetch(`/api/admin/leads/${id}/followup`, { method: "POST" }));
   };
 
   const renderAssignment = (lead: Lead) => {
@@ -234,6 +249,17 @@ export function LeadsTable() {
       {error && <p style={{ color: "#c0392b" }}>Error loading leads: {error}</p>}
       {isLoading && leads.length === 0 && <p>Loading...</p>}
       {!isLoading && !error && leads.length === 0 && <p>No leads match this view.</p>}
+      {actionError && (
+        <p style={{ color: "#c0392b", background: "#fdecea", padding: "8px 12px", borderRadius: 6 }}>
+          {actionError}{" "}
+          <button
+            onClick={() => setActionError(null)}
+            style={{ background: "none", border: "none", color: "#c0392b", cursor: "pointer", textDecoration: "underline", fontSize: 13 }}
+          >
+            Dismiss
+          </button>
+        </p>
+      )}
 
       {leads.length > 0 && (
         <div style={{ background: "#fff", borderRadius: 8, overflow: "hidden", border: "1px solid #e0e0e0" }}>
@@ -450,13 +476,24 @@ export function LeadsTable() {
                           rows={3}
                           style={{ width: "100%", marginTop: 4, fontFamily: "inherit", fontSize: 13, boxSizing: "border-box" }}
                         />
-                        <button
-                          onClick={() => saveNotes(lead.id)}
-                          disabled={busyId === lead.id}
-                          style={{ ...smallButtonStyle, marginTop: 6 }}
-                        >
-                          {busyId === lead.id ? "Saving..." : "Save notes"}
-                        </button>
+                        <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+                          <button onClick={() => saveNotes(lead.id)} disabled={busyId === lead.id} style={smallButtonStyle}>
+                            {busyId === lead.id ? "Saving..." : "Save notes"}
+                          </button>
+                          <button
+                            onClick={() => {
+                              const existing = (notesDraft[lead.id] ?? lead.counsellorNotes ?? "").trim();
+                              if (existing && !window.confirm("Replace your current notes draft with an auto-generated summary?")) {
+                                return;
+                              }
+                              setNotesDraft((prev) => ({ ...prev, [lead.id]: suggestCounsellorNote(lead) }));
+                            }}
+                            disabled={busyId === lead.id}
+                            style={smallButtonStyle}
+                          >
+                            Suggest note
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   )}

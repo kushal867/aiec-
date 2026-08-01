@@ -38,11 +38,26 @@ async def _http_exception_handler(request: Request, exc: HTTPException) -> JSONR
     return JSONResponse(status_code=exc.status_code, content={"error": exc.detail}, headers=exc.headers)
 
 
+def _humanize_validation_errors(errors: list[dict]) -> str:
+    """Pydantic's raw error list is only surfaced via the "details" field,
+    which no frontend actually reads (see _http_exception_handler's
+    docstring) — every validation failure showed the same unhelpful flat
+    "Invalid request body" regardless of which field or why. Building a
+    specific summary into "error" itself makes it actionable without
+    needing every frontend call site to be changed."""
+    parts = []
+    for err in errors:
+        # loc is like ("body", "budget") — "body" itself isn't meaningful to
+        # someone filling out a form, only the field name(s) after it are.
+        field = ".".join(str(p) for p in err["loc"][1:]) or "request"
+        parts.append(f"{field}: {err['msg']}")
+    return "; ".join(parts) or "Invalid request body"
+
+
 @app.exception_handler(RequestValidationError)
 async def _validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
-    return JSONResponse(
-        status_code=400, content={"error": "Invalid request body", "details": jsonable_encoder(exc.errors())}
-    )
+    errors = jsonable_encoder(exc.errors())
+    return JSONResponse(status_code=400, content={"error": _humanize_validation_errors(errors), "details": errors})
 
 
 app.add_middleware(PathScopedCORSMiddleware)

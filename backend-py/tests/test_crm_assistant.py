@@ -71,3 +71,20 @@ def test_followup_suggestion_no_urgent_action_when_on_track_and_complete(test_db
 
     suggestion = generate_followup_suggestion(student, inactivity)
     assert "no urgent action" in suggestion.suggestedAction.lower()
+
+
+# --- regression: the message shown to counsellors AND the message template
+# actually sent to students used raw internal keys ("citizenship, marksheet,
+# ielts_certificate") instead of human labels, and "upload it" (singular)
+# even when listing 3 missing documents ---
+def test_followup_uses_human_labels_not_raw_keys(test_db):
+    student = _student(test_db, status="Hot")
+    student = test_db.execute("SELECT * FROM students WHERE id=?", (student["id"],)).fetchone()
+    inactivity = check_inactivity(student)
+    suggestion = generate_followup_suggestion(student, inactivity)
+
+    for raw_key in ("ielts_certificate",):
+        assert raw_key not in suggestion.suggestedAction
+        assert raw_key not in suggestion.messageTemplate
+    assert "IELTS certificate" in suggestion.suggestedAction
+    assert "upload them" in suggestion.messageTemplate  # not "upload it" for 3 missing docs

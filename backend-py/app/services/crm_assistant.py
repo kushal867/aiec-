@@ -4,7 +4,23 @@ from datetime import datetime, timezone
 from typing import Any
 
 from app.services.application_status import explain_application_status
-from app.services.document_checklist import build_document_checklist
+from app.services.document_checklist import DOCUMENT_LABELS, build_document_checklist
+
+
+def _join_readable(items: list[str]) -> str:
+    """["a"] -> "a"; ["a","b"] -> "a and b"; ["a","b","c"] -> "a, b, and c" —
+    a document list joined with bare commas ("citizenship, marksheet,
+    ielts_certificate") reads like a raw data dump, not a sentence a human
+    wrote."""
+    if len(items) <= 1:
+        return items[0] if items else ""
+    if len(items) == 2:
+        return f"{items[0]} and {items[1]}"
+    return f"{', '.join(items[:-1])}, and {items[-1]}"
+
+
+def _document_labels(doc_types: list[str]) -> list[str]:
+    return [DOCUMENT_LABELS[t] for t in doc_types]
 
 # Named, documented thresholds — same rubric philosophy as lead_scoring.py: a
 # Hot lead going quiet is far more time-sensitive than a Cold one.
@@ -73,9 +89,11 @@ def generate_followup_suggestion(student: Any, inactivity: InactivityCheckResult
     name = student["name"]
 
     if checklist.missing:
-        action = f"Ask {name} to upload the missing document(s): {', '.join(checklist.missing)}."
+        missing_labels = _join_readable(_document_labels(checklist.missing))
+        action = f"Ask {name} to upload the missing document(s): {missing_labels}."
     elif checklist.needsAttention:
-        action = f"Ask {name} to re-upload the flagged document(s): {', '.join(checklist.needsAttention)}."
+        attention_labels = _join_readable(_document_labels(checklist.needsAttention))
+        action = f"Ask {name} to re-upload the flagged document(s): {attention_labels}."
     elif inactivity.isInactive:
         action = f"Reach out to {name} — it's been {inactivity.daysSinceContact if inactivity.daysSinceContact is not None else 'a while'} day(s) since last contact."
     else:
@@ -83,12 +101,15 @@ def generate_followup_suggestion(student: Any, inactivity: InactivityCheckResult
 
     message_lines = [f"Hi {name},"]
     if checklist.missing:
+        missing_labels = _document_labels(checklist.missing)
+        pronoun = "it" if len(missing_labels) == 1 else "them"
         message_lines.append(
-            f"We're still waiting on your {', '.join(checklist.missing)} — could you upload it when you get a chance?"
+            f"We're still waiting on your {_join_readable(missing_labels)} — could you upload {pronoun} when you get a chance?"
         )
     elif checklist.needsAttention:
+        attention_labels = _document_labels(checklist.needsAttention)
         message_lines.append(
-            f"We noticed an issue with your {', '.join(checklist.needsAttention)} — could you re-upload a clearer copy?"
+            f"We noticed an issue with your {_join_readable(attention_labels)} — could you re-upload a clearer copy?"
         )
     else:
         message_lines.append(

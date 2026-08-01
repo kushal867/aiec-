@@ -218,25 +218,53 @@ def diagnose_no_match(conn: sqlite3.Connection, profile: StudentProfile) -> NoMa
     return NoMatchDiagnosis(reason="ielts_below_minimum", minIelts=min(ielts_values) if ielts_values else None)
 
 
+def format_fee(fee_per_year: float | None) -> str:
+    if fee_per_year is None:
+        return "fee n/a"
+    return f"${fee_per_year:,.0f}/year"
+
+
+def format_duration(duration_years: float | None) -> str:
+    if duration_years is None:
+        return "duration n/a"
+    if duration_years < 1:
+        months = round(duration_years * 12)
+        return f"{months} month" + ("" if months == 1 else "s")
+    if duration_years == int(duration_years):
+        years = int(duration_years)
+        return f"{years} yr" + ("" if years == 1 else "s")
+    return f"{duration_years} yrs"
+
+
+def format_course_location(course: Any) -> str:
+    """"University, Country" when a specific university is on file, else
+    just "Country" — deliberately drops the old "at a partner institution
+    (specific university not listed)" filler. Repeating that phrase for
+    every course in a list read as robotic and added no information; simply
+    omitting it when there's nothing to say is more honest and reads much
+    more naturally."""
+    d = _row_to_dict(course) if not isinstance(course, dict) else course
+    return f"{d['university']}, {d['country']}" if d.get("university") else d["country"]
+
+
 def format_courses_for_prompt(courses: list[Any]) -> str:
+    """Renders courses for direct display in the chat widget — a numbered,
+    two-line card per course (name/location, then key facts), not one dense
+    run-on sentence. The widget preserves newlines (white-space: pre-wrap)
+    but doesn't render markdown, so formatting is plain text only."""
     if not courses:
         return "(no matching courses found)"
 
     lines = []
-    for c in courses:
+    for i, c in enumerate(courses, start=1):
         d = _row_to_dict(c) if not isinstance(c, dict) else c
-        university = d.get("university") or "partner institution (specific university not listed)"
-        score_line = ""
-        if "matchScore" in d:
-            reasons = d.get("matchReasons") or []
-            reasons_str = f" ({'; '.join(reasons)})" if reasons else ""
-            score_line = f" Fit score: {d['matchScore']}/100{reasons_str}."
-        lines.append(
-            f"- {d['course_name']} ({d['course_level']}) — {d['country']}, {university}. "
-            f"IELTS required: {d.get('ielts_required') if d.get('ielts_required') is not None else 'n/a'}. "
-            f"Fee: ${d.get('fee_per_year') if d.get('fee_per_year') is not None else 'n/a'}/year "
-            f"(range {d.get('fee_range') or 'n/a'}). "
-            f"Duration: {d.get('duration_years') if d.get('duration_years') is not None else 'n/a'} yrs. "
-            f"Intake: {d.get('intake') or 'n/a'}.{score_line}"
+        location = format_course_location(d)
+        ielts = f"IELTS {d['ielts_required']}+" if d.get("ielts_required") is not None else "IELTS n/a"
+        facts = " · ".join(
+            [d["course_level"], ielts, format_fee(d.get("fee_per_year")), format_duration(d.get("duration_years"))]
         )
+        intake = d.get("intake")
+        if intake:
+            facts += f" · Intake: {intake}"
+        lines.append(f"{i}. {d['course_name']} — {location}\n   {facts}")
     return "\n".join(lines)

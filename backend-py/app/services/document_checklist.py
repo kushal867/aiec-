@@ -3,7 +3,7 @@ from typing import Any
 
 from app.services.document_verification import DOCUMENT_TYPES
 
-_DOCUMENT_LABELS = {
+DOCUMENT_LABELS = {
     "citizenship": "Citizenship / ID document",
     "marksheet": "Academic transcript / marksheet",
     "ielts_certificate": "IELTS certificate",
@@ -44,7 +44,7 @@ def build_document_checklist(documents: list[dict[str, Any]]) -> DocumentCheckli
         items.append(
             DocumentChecklistItem(
                 documentType=doc_type,
-                label=_DOCUMENT_LABELS[doc_type],
+                label=DOCUMENT_LABELS[doc_type],
                 uploaded=latest is not None,
                 status=latest["status"] if latest else None,
                 issues=latest["issues"] if latest else [],

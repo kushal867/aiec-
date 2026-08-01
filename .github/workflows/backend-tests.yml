@@ -1,0 +1,42 @@
+name: backend-py tests
+
+on:
+  push:
+    paths:
+      - "backend-py/**"
+      - ".github/workflows/backend-tests.yml"
+  pull_request:
+    paths:
+      - "backend-py/**"
+      - ".github/workflows/backend-tests.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend-py
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # tesseract-ocr-nep is needed for the Devanagari citizenship-document
+      # tests — without it those tests would silently skip real coverage.
+      - name: Install tesseract-ocr
+        run: sudo apt-get update && sudo apt-get install -y tesseract-ocr tesseract-ocr-nep
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend-py/requirements.txt') }}
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run test suite
+        run: python -m pytest tests/ -v --cov=app --cov-report=term-missing

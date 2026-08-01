@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 from app.db import get_db, query_courses
-from app.services.course_matcher import CourseMatchResult
+from app.services.course_matcher import CourseMatchResult, format_course_location, format_duration
 from app.services.lead_scoring import PRIORITY_COUNTRIES, StudentProfile
 
 # No LLM here — stage 1 is the top primary course match, stage 2 is the top
@@ -32,12 +32,11 @@ def generate_study_path(profile: StudentProfile, matches: CourseMatchResult) -> 
 
     if matches.primary:
         top = matches.primary[0]
-        university = top.get("university") or "a partner institution"
         stages.append(
             {
-                "title": f"{top['course_name']} at {university} ({top['country']})",
+                "title": f"{top['course_name']} ({format_course_location(top)})",
                 "description": "Your top-matching course based on your stated profile and budget.",
-                "estimatedTimeframe": f"{top['duration_years']} yrs" if top.get("duration_years") else "Varies by intake",
+                "estimatedTimeframe": format_duration(top.get("duration_years")),
             }
         )
 
@@ -51,12 +50,11 @@ def generate_study_path(profile: StudentProfile, matches: CourseMatchResult) -> 
 
     if stage2_courses:
         top2 = stage2_courses[0]
-        university2 = top2["university"] or "a partner institution"
         stages.append(
             {
-                "title": f"{top2['course_name']} at {university2} ({top2['country']})",
+                "title": f"{top2['course_name']} ({format_course_location(top2)})",
                 "description": "A natural next step after stage 1, based on the course levels available in our database.",
-                "estimatedTimeframe": f"{top2['duration_years']} yrs" if top2["duration_years"] else "Varies by intake",
+                "estimatedTimeframe": format_duration(top2["duration_years"]),
             }
         )
     else:

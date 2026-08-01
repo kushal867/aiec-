@@ -1,7 +1,7 @@
 import sqlite3
 from dataclasses import dataclass, field
 
-from app.services.course_matcher import CourseMatchResult, diagnose_no_match
+from app.services.course_matcher import CourseMatchResult, diagnose_no_match, format_course_location
 from app.services.lead_scoring import ACADEMIC_BACKGROUND_LABELS, StudentProfile
 
 # No LLM here — the report is assembled from match_courses()'s already-
@@ -42,8 +42,7 @@ def _fee_range(courses: list[dict]) -> tuple[float, float] | None:
 
 
 def _course_line(c: dict) -> str:
-    university = c.get("university") or "a partner institution"
-    return f"{c['course_name']} at {university} ({c['country']})"
+    return f"{c['course_name']} ({format_course_location(c)})"
 
 
 def _no_match_report(conn: sqlite3.Connection, profile: StudentProfile) -> ProfileReport:
