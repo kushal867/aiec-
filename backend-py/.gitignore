@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+data/knowledge.db
+data/pdfs/*.pdf
+data/uploads/
+data/.jwt-secret
+data/conversion_model.joblib
+.coverage
+.pytest_cache/
