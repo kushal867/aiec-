@@ -102,13 +102,9 @@ _STOPWORDS = {
     "study", "course", "courses", "program", "programs", "university", "universities",
 }
 
-# A message with none of these and no country/field match is treated as
-# small talk ("hi", "thanks", "ok") and does NOT get a course dump — anything
-# else that reaches the final fallback in _lookup_courses gets a general
-# sample instead of a dead end, since this is a study-abroad chat widget and
-# almost anything else sent to it is realistically course-related even
-# without a specific field or country ("list the universities", "what do you
-# have", "show me options").
+# A message made up entirely of these words gets a real greeting reply
+# (see _small_talk_reply) instead of a course dump or the flat "no info"
+# message.
 _GREETING_ONLY = {
     "hi", "hello", "hey", "yo", "sup", "thanks", "thank", "ok", "okay", "yes", "no", "bye",
     "goodbye", "cool", "great", "nice", "sure", "nvm", "nevermind",
@@ -209,6 +205,21 @@ def _typo_variants(word: str) -> list[str]:
     return variants
 
 
+# Regression: the general-sample fallback used to trigger on ANY message
+# that wasn't pure small talk — which meant genuine policy questions
+# ("do you have scholarships", "how long does visa take", "is there an
+# application fee", "can my family come with me") got a random, completely
+# irrelevant course dump instead of an honest "I don't have that
+# information". That's worse than admitting the gap — it looks like an
+# answer but isn't one. The sample now only fires when the message actually
+# signals course-browsing intent.
+_BROWSE_INTENT_WORDS = {
+    "list", "show", "offer", "offers", "available", "options", "browse",
+    "see", "courses", "course", "programs", "program", "programe", "universities",
+    "university",
+}
+
+
 def _lookup_courses(message: str, profile: StudentProfile | None) -> tuple[list[Any], str]:
     """Returns (courses, match_type), match_type one of "exact",
     "country_sample", "general_sample" — used to pick honest header wording
@@ -234,7 +245,7 @@ def _lookup_courses(message: str, profile: StudentProfile | None) -> tuple[list[
             return fallback, "country_sample"
 
     words = set(re.findall(r"[a-zA-Z]+", message.lower()))
-    if words and words != (words & _GREETING_ONLY):
+    if words & _BROWSE_INTENT_WORDS:
         sample = query_courses(conn, max_ielts=max_ielts, limit=6)
         if sample:
             return sample, "general_sample"
@@ -249,7 +260,7 @@ class GeneratedAnswer:
     coursesReferenced: list[dict[str, Any]] = field(default_factory=list)
 
 
-_NO_INFO_REPLY = (
+NO_INFO_REPLY = (
     "I don't have grounded information on that yet. Please contact a human counsellor for help with this question."
 )
 
@@ -293,6 +304,6 @@ def generate_answer(latest_message: str, retrieved_chunks: list[Any], profile: S
         sources = list(seen.values())
 
     if not reply_parts:
-        return GeneratedAnswer(reply=_NO_INFO_REPLY, sources=[], coursesReferenced=[])
+        return GeneratedAnswer(reply=NO_INFO_REPLY, sources=[], coursesReferenced=[])
 
     return GeneratedAnswer(reply="\n\n".join(reply_parts), sources=sources, coursesReferenced=courses_referenced)

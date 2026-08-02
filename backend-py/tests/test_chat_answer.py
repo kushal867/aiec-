@@ -86,14 +86,38 @@ def test_greetings_do_not_dump_random_courses(seeded_courses):
     assert result.coursesReferenced == []
 
 
-# Non-greeting messages deliberately fall back to a general course sample
-# rather than "no info" — there's no way to distinguish a vague course
-# question ("what do you have?") from unrelated text without real language
-# understanding, and the design choice is to err toward showing something
-# real over a dead end (see chat_answer.py's _lookup_courses docstring).
-# "No info" is only reachable when the catalog itself has nothing to show —
-# verified here against a genuinely empty DB (test_db, not seeded_courses).
+# Messages with explicit browse intent ("list", "show", "available",
+# "options", "universities"...) fall back to a general course sample rather
+# than "no info" when no specific field/country matched — genuinely
+# unrelated text does not (see the regression test below for why that
+# distinction matters).
 def test_truly_empty_catalog_falls_back_to_no_info_gracefully(test_db):
     result = generate_answer("xyzzyx qwerty", [], None)
     assert result.coursesReferenced == []
     assert "I don't have grounded information" in result.reply
+
+
+# --- regression: the general-sample fallback used to trigger on ANY
+# non-greeting message, so genuine policy questions ("do you have
+# scholarships", "how long does visa take", "is there an application fee",
+# "can my family come with me") got a random, totally irrelevant course
+# dump instead of an honest "I don't have that information" — which is
+# actively worse than admitting the gap, since it looks like an answer but
+# isn't one. These have zero course/country signal and no policy PDFs are
+# ingested, so they must honestly say so. ---
+def test_policy_questions_with_no_course_signal_get_honest_no_info(seeded_courses):
+    policy_questions = [
+        "do you have scholarships",
+        "is there any interview required",
+        "how long does visa take",
+        "is there application fee",
+        "can my family come with me",
+        "whats the deadline to apply",
+        "do i need to submit passport",
+        "can i work while studying",
+        "what if i fail ielts",
+    ]
+    for q in policy_questions:
+        result = generate_answer(q, [], None)
+        assert result.coursesReferenced == [], f"{q!r} should not get a random course dump"
+        assert "I don't have grounded information" in result.reply
