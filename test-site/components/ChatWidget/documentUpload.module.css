@@ -3,23 +3,25 @@
   flex-direction: column;
   gap: 14px;
   padding: 16px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   background: #fff;
   font-family: system-ui, -apple-system, sans-serif;
   max-width: 420px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .title {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
+  color: #111827;
 }
 
 .subtitle {
   margin: 0;
   font-size: 12px;
-  color: #777;
+  color: #6b7280;
 }
 
 .slot {
@@ -27,7 +29,7 @@
   flex-direction: column;
   gap: 6px;
   padding-top: 10px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #f3f4f6;
 }
 
 .slotHeader {
@@ -38,23 +40,30 @@
 .slotLabel {
   font-size: 13px;
   font-weight: 600;
+  color: #1f2937;
 }
 
 .slotHint {
   font-size: 11px;
-  color: #999;
+  color: #9ca3af;
 }
 
 .fileButton {
   position: relative;
   display: inline-block;
   padding: 6px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 12px;
   cursor: pointer;
   width: fit-content;
-  background: #f7f7f7;
+  background: #f9fafb;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.fileButton:hover {
+  background: #eaf3f6;
+  border-color: var(--aiec-chat-primary, #1a5f7a);
 }
 
 .fileInput {
@@ -66,13 +75,13 @@
 
 .fileName {
   font-size: 11px;
-  color: #666;
+  color: #6b7280;
 }
 
 .result {
   margin-top: 4px;
   padding: 8px 10px;
-  background: #f7f7f7;
+  background: #f9fafb;
   border-radius: 8px;
 }
 
@@ -84,7 +93,7 @@
 .message {
   margin: 6px 0 0;
   font-size: 12px;
-  color: #333;
+  color: #374151;
 }
 
 .issues {
@@ -99,7 +108,7 @@
   flex-direction: column;
   gap: 2px;
   padding: 8px 10px;
-  background: #fff8e6;
+  background: #fdf1d6;
   border: 1px solid #f0dca0;
   border-radius: 8px;
   font-size: 12px;
@@ -113,4 +122,14 @@
   border-radius: 8px;
   font-size: 12px;
   color: #1a7d3a;
+}
+
+.uploadError {
+  margin-top: 4px;
+  padding: 8px 10px;
+  background: #fdecea;
+  border: 1px solid #f0b4ac;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #c0392b;
 }

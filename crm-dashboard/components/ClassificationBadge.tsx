@@ -12,10 +12,11 @@ export function ClassificationBadge({ status }: { status: LeadStatus }) {
     <span
       style={{
         display: "inline-block",
-        padding: "2px 10px",
+        padding: "3px 11px",
         borderRadius: 999,
         fontSize: 12,
-        fontWeight: 600,
+        fontWeight: 700,
+        letterSpacing: "0.02em",
         textTransform: "uppercase",
         background: bg,
         color: fg,

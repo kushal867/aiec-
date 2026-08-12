@@ -6,6 +6,7 @@ import { useLeads } from "./useLeads";
 import { useCounsellors } from "./useCounsellors";
 import { ClassificationBadge } from "./ClassificationBadge";
 import { APPLICATION_STATUSES, type ApplicationStatus, type Lead, type LeadStatus } from "./types";
+import styles from "./LeadsTable.module.css";
 
 const FILTERS: { label: string; value: LeadStatus | undefined }[] = [
   { label: "All", value: undefined },
@@ -60,13 +61,13 @@ function suggestCounsellorNote(lead: Lead): string {
 function conversionColor(likelihood: Lead["conversionPrediction"]["likelihood"]): string {
   switch (likelihood) {
     case "Very Likely":
-      return "#1a7d3a";
+      return "var(--color-success)";
     case "Likely":
       return "#1d7a8c";
     case "Possible":
-      return "#b7791f";
+      return "var(--color-warning)";
     case "Unlikely":
-      return "#c0392b";
+      return "var(--color-danger)";
   }
 }
 
@@ -194,7 +195,7 @@ export function LeadsTable() {
           value={lead.assignedCounsellorId}
           disabled={busyId === lead.id}
           onChange={(e) => assign(lead.id, Number(e.target.value))}
-          style={selectStyle}
+          className={styles.select}
         >
           {counsellors.map((c) => (
             <option key={c.id} value={c.id}>
@@ -211,7 +212,7 @@ export function LeadsTable() {
           value=""
           disabled={busyId === lead.id}
           onChange={(e) => e.target.value && assign(lead.id, Number(e.target.value))}
-          style={selectStyle}
+          className={styles.select}
         >
           <option value="">
             {lead.suggestedCounsellorId ? `Suggested: ${counsellorName(lead.suggestedCounsellorId)}` : "Assign..."}
@@ -227,7 +228,7 @@ export function LeadsTable() {
 
     // Counsellor view — self-claim only.
     return (
-      <button onClick={() => user && assign(lead.id, user.id)} disabled={busyId === lead.id} style={smallButtonStyle}>
+      <button onClick={() => user && assign(lead.id, user.id)} disabled={busyId === lead.id} className={styles.smallButton}>
         Claim{lead.suggestedCounsellorId === user?.id ? " (suggested)" : ""}
       </button>
     );
@@ -235,107 +236,82 @@ export function LeadsTable() {
 
   return (
     <div>
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, alignItems: "center", flexWrap: "wrap" }}>
+      <div className={styles.toolbar}>
         {FILTERS.map((f) => (
           <button
             key={f.label}
             onClick={() => setFilter(f.value)}
-            style={{
-              padding: "6px 14px",
-              borderRadius: 8,
-              border: "1px solid #ccc",
-              background: filter === f.value ? "#1a5f7a" : "#fff",
-              color: filter === f.value ? "#fff" : "#333",
-              cursor: "pointer",
-              fontSize: 13,
-            }}
+            className={`${styles.pillButton} ${filter === f.value ? styles.pillButtonActive : ""}`}
           >
             {f.label}
           </button>
         ))}
         <button
           onClick={() => setInactiveOnly((v) => !v)}
-          style={{
-            padding: "6px 14px",
-            borderRadius: 8,
-            border: "1px solid #ccc",
-            background: inactiveOnly ? "#c0392b" : "#fff",
-            color: inactiveOnly ? "#fff" : "#333",
-            cursor: "pointer",
-            fontSize: 13,
-          }}
+          className={`${styles.pillButton} ${inactiveOnly ? styles.pillButtonDanger : ""}`}
         >
           {inactiveOnly ? "Inactive only ✓" : "Inactive only"}
         </button>
-        <span style={{ flex: 1 }} />
-        <button
-          onClick={() => setSort(sort === "desc" ? "asc" : "desc")}
-          style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid #ccc", background: "#fff", cursor: "pointer", fontSize: 13 }}
-        >
+        <span className={styles.spacer} />
+        <button onClick={() => setSort(sort === "desc" ? "asc" : "desc")} className={styles.pillButton}>
           Sort: {sort === "desc" ? "Newest first" : "Oldest first"}
         </button>
-        <button
-          onClick={() => refetch()}
-          style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid #ccc", background: "#fff", cursor: "pointer", fontSize: 13 }}
-        >
+        <button onClick={() => refetch()} className={styles.pillButton}>
           Refresh
         </button>
       </div>
 
-      {error && <p style={{ color: "#c0392b" }}>Error loading leads: {error}</p>}
+      {error && <p className={styles.errorText}>Error loading leads: {error}</p>}
       {isLoading && leads.length === 0 && <p>Loading...</p>}
       {!isLoading && !error && leads.length === 0 && <p>No leads match this view.</p>}
       {actionError && (
-        <p style={{ color: "#c0392b", background: "#fdecea", padding: "8px 12px", borderRadius: 6 }}>
-          {actionError}{" "}
-          <button
-            onClick={() => setActionError(null)}
-            style={{ background: "none", border: "none", color: "#c0392b", cursor: "pointer", textDecoration: "underline", fontSize: 13 }}
-          >
+        <p className={styles.actionError}>
+          {actionError}
+          <button onClick={() => setActionError(null)} className={styles.dismissButton}>
             Dismiss
           </button>
         </p>
       )}
 
       {leads.length > 0 && (
-        <div style={{ background: "#fff", borderRadius: 8, overflow: "hidden", border: "1px solid #e0e0e0" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
             <thead>
-              <tr style={{ background: "#f0f0f0", textAlign: "left" }}>
-                <th style={cellStyle}>Name</th>
-                <th style={cellStyle}>Email</th>
-                <th style={cellStyle}>Score</th>
-                <th style={cellStyle}>Lead Status</th>
-                <th style={cellStyle}>Conversion</th>
-                <th style={cellStyle}>Application Status</th>
-                <th style={cellStyle}>Assigned To</th>
-                <th style={cellStyle}>Contact</th>
-                <th style={cellStyle}>Submitted</th>
-                <th style={cellStyle}></th>
+              <tr className={styles.theadRow}>
+                <th className={styles.th}>Name</th>
+                <th className={styles.th}>Email</th>
+                <th className={styles.th}>Score</th>
+                <th className={styles.th}>Lead Status</th>
+                <th className={styles.th}>Conversion</th>
+                <th className={styles.th}>Application Status</th>
+                <th className={styles.th}>Assigned To</th>
+                <th className={styles.th}>Contact</th>
+                <th className={styles.th}>Submitted</th>
+                <th className={styles.th}></th>
               </tr>
             </thead>
             <tbody>
               {leads.map((lead) => (
                 <Fragment key={lead.id}>
-                  <tr style={{ borderTop: "1px solid #eee" }}>
-                    <td style={cellStyle}>{lead.name}</td>
-                    <td style={cellStyle}>{lead.email ?? "—"}</td>
-                    <td style={cellStyle}>{lead.score.toFixed(1)}</td>
-                    <td style={cellStyle}>
+                  <tr className={styles.row}>
+                    <td className={styles.td}>{lead.name}</td>
+                    <td className={styles.td}>{lead.email ?? "—"}</td>
+                    <td className={styles.td}>{lead.score.toFixed(1)}</td>
+                    <td className={styles.td}>
                       <ClassificationBadge status={lead.status} />
                     </td>
-                    <td style={cellStyle}>
-                      <span style={{ fontWeight: 600, color: conversionColor(lead.conversionPrediction.likelihood) }}>
+                    <td className={styles.td}>
+                      <span className={styles.conversionValue} style={{ color: conversionColor(lead.conversionPrediction.likelihood) }}>
                         {lead.conversionPrediction.probability}%
                       </span>{" "}
-                      <span style={{ color: "#999", fontSize: 11 }}>{lead.conversionPrediction.likelihood}</span>
+                      <span className={styles.conversionLikelihood}>{lead.conversionPrediction.likelihood}</span>
                     </td>
-                    <td style={cellStyle}>
+                    <td className={styles.td}>
                       <select
                         value={lead.applicationStatus.status}
                         disabled={busyId === lead.id}
                         onChange={(e) => updateStatus(lead.id, e.target.value as ApplicationStatus)}
-                        style={selectStyle}
+                        className={styles.select}
                       >
                         {APPLICATION_STATUSES.map((s) => (
                           <option key={s} value={s}>
@@ -344,193 +320,223 @@ export function LeadsTable() {
                         ))}
                       </select>
                     </td>
-                    <td style={cellStyle}>{renderAssignment(lead)}</td>
-                    <td style={cellStyle}>
+                    <td className={styles.td}>{renderAssignment(lead)}</td>
+                    <td className={styles.td}>
                       {lead.inactivity.isInactive ? (
-                        <span style={{ color: "#c0392b", fontWeight: 600 }}>
+                        <span className={styles.inactiveFlag}>
                           ⚠ {lead.inactivity.daysSinceContact === null ? "never contacted" : `${lead.inactivity.daysSinceContact}d`}
                         </span>
                       ) : (
-                        <span style={{ color: "#999" }}>
+                        <span className={styles.mutedText}>
                           {lead.lastContactedAt ? relativeTime(lead.lastContactedAt) : "on track"}
                         </span>
                       )}
                     </td>
-                    <td style={cellStyle}>{relativeTime(lead.createdAt)}</td>
-                    <td style={cellStyle}>
+                    <td className={styles.td}>{relativeTime(lead.createdAt)}</td>
+                    <td className={styles.td}>
                       <button
                         onClick={() => setExpandedId(expandedId === lead.id ? null : lead.id)}
-                        style={smallButtonStyle}
+                        className={styles.smallButton}
                       >
                         {expandedId === lead.id ? "Hide" : "View"}
                       </button>
                     </td>
                   </tr>
                   {expandedId === lead.id && (
-                    <tr style={{ background: "#fafafa" }}>
-                      <td colSpan={10} style={{ ...cellStyle, whiteSpace: "pre-wrap" }}>
-                        <strong>Reference code:</strong> {lead.referenceCode ?? "—"} &nbsp;
-                        <strong>Phone:</strong> {lead.phone ?? "—"}
-                        {lead.aiResponse && (
-                          <span style={{ marginLeft: 12 }} onClick={(e) => e.stopPropagation()}>
-                            <button
-                              onClick={() => downloadReport(lead.id, lead.name, "pdf")}
-                              disabled={downloadingId === `${lead.id}-pdf`}
-                              style={{ ...downloadLinkStyle, background: "none", border: "none", cursor: "pointer" }}
-                            >
-                              {downloadingId === `${lead.id}-pdf` ? "Downloading…" : "Download PDF"}
-                            </button>
-                            <button
-                              onClick={() => downloadReport(lead.id, lead.name, "docx")}
-                              disabled={downloadingId === `${lead.id}-docx`}
-                              style={{ ...downloadLinkStyle, marginLeft: 8, background: "none", border: "none", cursor: "pointer" }}
-                            >
-                              {downloadingId === `${lead.id}-docx` ? "Downloading…" : "Download Word"}
-                            </button>
-                          </span>
-                        )}
-                        <br />
-                        <strong>GPA:</strong> {lead.gpa} / 4.0 &nbsp; <strong>IELTS:</strong> {lead.ielts} / 9.0 &nbsp;
-                        <strong>Budget:</strong> ${lead.budget.toLocaleString()} &nbsp; <strong>Gap:</strong> {lead.gap}y
-                        <br />
-                        <strong>Preferred country:</strong> {lead.preferredCountry ?? "Any"} &nbsp;
-                        <strong>Recommended:</strong> {lead.countries ?? "—"}
-                        <br />
-                        <strong>Academic background:</strong> {lead.academicBackground ?? "—"} &nbsp;
-                        <strong>Migration intent:</strong> {lead.migrationIntent ?? "—"}
-                        <br />
-                        <strong>Career goals:</strong> {lead.careerGoals || "—"}
-
-                        <br />
-                        <br />
-                        <strong>Application status:</strong> {lead.applicationStatus.label} — {lead.applicationStatus.description}
-                        <br />
-                        <strong>AI report sent:</strong>
-                        <br />
-                        {lead.aiResponse}
-                        {lead.nextSteps.length > 0 && (
-                          <>
-                            <br />
-                            <br />
-                            <strong>Next steps:</strong>
-                            <ol style={{ margin: "4px 0 0", paddingLeft: 20 }}>
-                              {lead.nextSteps.map((step, i) => (
-                                <li key={i}>{step}</li>
-                              ))}
-                            </ol>
-                          </>
-                        )}
-
-                        <br />
-                        <strong>Documents ({lead.documentChecklist.complete ? "complete" : "incomplete"}):</strong>
-                        <ul style={{ margin: "4px 0 0", paddingLeft: 20 }}>
-                          {lead.documentChecklist.items.map((item) => (
-                            <li key={item.documentType}>
-                              <span
-                                style={{
-                                  fontWeight: 600,
-                                  color: !item.uploaded ? "#999" : item.status === "valid" ? "#1a7d3a" : "#c0392b",
-                                }}
-                              >
-                                [{!item.uploaded ? "MISSING" : DOC_STATUS_LABEL[item.status ?? ""] ?? item.status}]
-                              </span>{" "}
-                              {item.label}
-                              {item.issues.length > 0 && (
-                                <ul style={{ margin: "2px 0 0", paddingLeft: 18, color: "#c0392b" }}>
-                                  {item.issues.map((issue, j) => (
-                                    <li key={j}>{issue}</li>
-                                  ))}
-                                </ul>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-
-                        <br />
-                        <strong>Follow-up assistant:</strong>
-                        <div style={{ marginTop: 4 }}>
-                          {lead.followupTiming && (
-                            <div>
-                              <strong>Timing:</strong> {lead.followupTiming}
+                    <tr className={styles.expandedRow}>
+                      <td colSpan={10} className={styles.expandedCell}>
+                        <div className={styles.detailGrid}>
+                          <div className={styles.detailSection}>
+                            <p className={styles.detailSectionTitle}>Profile</p>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Reference:</span> {lead.referenceCode ?? "—"}
                             </div>
-                          )}
-                          {lead.followupAction && (
-                            <div>
-                              <strong>Suggested action:</strong> {lead.followupAction}
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Phone:</span> {lead.phone ?? "—"}
                             </div>
-                          )}
-                          {lead.followupSuggestion && (
-                            <div>
-                              <strong>Message draft:</strong> {lead.followupSuggestion}
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>GPA:</span> {lead.gpa} / 4.0 &nbsp;
+                              <span className={styles.detailLabel}>IELTS:</span> {lead.ielts} / 9.0
                             </div>
-                          )}
-                          <div style={{ marginTop: 6, display: "flex", gap: 8 }}>
-                            <button
-                              onClick={() => generateFollowup(lead.id)}
-                              disabled={busyId === lead.id}
-                              style={smallButtonStyle}
-                            >
-                              {busyId === lead.id ? "Working..." : lead.followupSuggestion ? "Regenerate suggestion" : "Generate suggestion"}
-                            </button>
-                            <button onClick={() => markContacted(lead.id)} disabled={busyId === lead.id} style={smallButtonStyle}>
-                              Mark contacted
-                            </button>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Budget:</span> ${lead.budget.toLocaleString()} &nbsp;
+                              <span className={styles.detailLabel}>Gap:</span> {lead.gap}y
+                            </div>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Preferred country:</span> {lead.preferredCountry ?? "Any"}
+                            </div>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Recommended:</span> {lead.countries ?? "—"}
+                            </div>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Academic background:</span> {lead.academicBackground ?? "—"}
+                            </div>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Migration intent:</span> {lead.migrationIntent ?? "—"}
+                            </div>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Career goals:</span> {lead.careerGoals || "—"}
+                            </div>
                           </div>
-                        </div>
 
-                        <br />
-                        <strong>Conversion likelihood:</strong>{" "}
-                        <span style={{ fontWeight: 600, color: conversionColor(lead.conversionPrediction.likelihood) }}>
-                          {lead.conversionPrediction.probability}% — {lead.conversionPrediction.likelihood}
-                        </span>
-                        <ul style={{ margin: "4px 0 0", paddingLeft: 20, color: "#666" }}>
-                          {lead.conversionPrediction.factors.map((factor, i) => (
-                            <li key={i}>{factor}</li>
-                          ))}
-                        </ul>
+                          <div className={styles.detailSection}>
+                            <p className={styles.detailSectionTitle}>Application &amp; conversion</p>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Status:</span> {lead.applicationStatus.label} —{" "}
+                              {lead.applicationStatus.description}
+                            </div>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Conversion likelihood:</span>{" "}
+                              <span
+                                className={styles.conversionValue}
+                                style={{ color: conversionColor(lead.conversionPrediction.likelihood) }}
+                              >
+                                {lead.conversionPrediction.probability}% — {lead.conversionPrediction.likelihood}
+                              </span>
+                            </div>
+                            {lead.conversionPrediction.factors.length > 0 && (
+                              <ul className={styles.detailList}>
+                                {lead.conversionPrediction.factors.map((factor, i) => (
+                                  <li key={i}>{factor}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
 
-                        <br />
-                        <strong>Study path:</strong>
-                        {lead.studyPath ? (
-                          <ol style={{ margin: "4px 0 0", paddingLeft: 20 }}>
-                            {lead.studyPath.map((stage, i) => (
-                              <li key={i} style={{ marginBottom: 4 }}>
-                                <strong>{stage.title}</strong> <span style={{ color: "#999" }}>({stage.estimatedTimeframe})</span>
-                                <br />
-                                {stage.description}
-                              </li>
+                          <div className={styles.detailSection}>
+                            <p className={styles.detailSectionTitle}>
+                              Documents ({lead.documentChecklist.complete ? "complete" : "incomplete"})
+                            </p>
+                            {lead.documentChecklist.items.map((item) => (
+                              <div key={item.documentType} className={styles.docItem}>
+                                <span
+                                  className={`${styles.docTag} ${
+                                    !item.uploaded ? styles.tagMissing : item.status === "valid" ? styles.tagValid : styles.tagIssue
+                                  }`}
+                                >
+                                  [{!item.uploaded ? "MISSING" : DOC_STATUS_LABEL[item.status ?? ""] ?? item.status}]
+                                </span>
+                                <span>
+                                  {item.label}
+                                  {item.issues.length > 0 && (
+                                    <ul className={`${styles.detailList} ${styles.detailListDanger}`}>
+                                      {item.issues.map((issue, j) => (
+                                        <li key={j}>{issue}</li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                </span>
+                              </div>
                             ))}
-                          </ol>
-                        ) : (
-                          <div style={{ color: "#999", fontSize: 12, marginTop: 4 }}>Not generated yet — the student can generate this from the chat widget.</div>
-                        )}
+                          </div>
 
-                        <br />
-                        <strong>Counsellor notes:</strong>
-                        <br />
-                        <textarea
-                          value={notesDraft[lead.id] ?? lead.counsellorNotes ?? ""}
-                          onChange={(e) => setNotesDraft((prev) => ({ ...prev, [lead.id]: e.target.value }))}
-                          rows={3}
-                          style={{ width: "100%", marginTop: 4, fontFamily: "inherit", fontSize: 13, boxSizing: "border-box" }}
-                        />
-                        <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
-                          <button onClick={() => saveNotes(lead.id)} disabled={busyId === lead.id} style={smallButtonStyle}>
-                            {busyId === lead.id ? "Saving..." : "Save notes"}
-                          </button>
-                          <button
-                            onClick={() => {
-                              const existing = (notesDraft[lead.id] ?? lead.counsellorNotes ?? "").trim();
-                              if (existing && !window.confirm("Replace your current notes draft with an auto-generated summary?")) {
-                                return;
-                              }
-                              setNotesDraft((prev) => ({ ...prev, [lead.id]: suggestCounsellorNote(lead) }));
-                            }}
-                            disabled={busyId === lead.id}
-                            style={smallButtonStyle}
-                          >
-                            Suggest note
-                          </button>
+                          <div className={styles.detailSection}>
+                            <p className={styles.detailSectionTitle}>Follow-up assistant</p>
+                            {lead.followupTiming && (
+                              <div className={styles.detailRow}>
+                                <span className={styles.detailLabel}>Timing:</span> {lead.followupTiming}
+                              </div>
+                            )}
+                            {lead.followupAction && (
+                              <div className={styles.detailRow}>
+                                <span className={styles.detailLabel}>Suggested action:</span> {lead.followupAction}
+                              </div>
+                            )}
+                            {lead.followupSuggestion && (
+                              <div className={styles.detailRow}>
+                                <span className={styles.detailLabel}>Message draft:</span> {lead.followupSuggestion}
+                              </div>
+                            )}
+                            <div className={styles.notesActions}>
+                              <button onClick={() => generateFollowup(lead.id)} disabled={busyId === lead.id} className={styles.smallButton}>
+                                {busyId === lead.id ? "Working..." : lead.followupSuggestion ? "Regenerate suggestion" : "Generate suggestion"}
+                              </button>
+                              <button onClick={() => markContacted(lead.id)} disabled={busyId === lead.id} className={styles.smallButton}>
+                                Mark contacted
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className={styles.detailSection}>
+                            <p className={styles.detailSectionTitle}>Study path</p>
+                            {lead.studyPath ? (
+                              <ol className={styles.detailList}>
+                                {lead.studyPath.map((stage, i) => (
+                                  <li key={i} style={{ marginBottom: 6 }}>
+                                    <strong>{stage.title}</strong> <span className={styles.mutedText}>({stage.estimatedTimeframe})</span>
+                                    <div>{stage.description}</div>
+                                  </li>
+                                ))}
+                              </ol>
+                            ) : (
+                              <div className={styles.emptyText}>Not generated yet — the student can generate this from the chat widget.</div>
+                            )}
+                          </div>
+
+                          {lead.aiResponse && (
+                            <div className={`${styles.detailSection} ${styles.detailFull}`}>
+                              <p className={styles.detailSectionTitle}>AI report sent</p>
+                              <div className={styles.detailRow} style={{ whiteSpace: "pre-wrap" }}>
+                                {lead.aiResponse}
+                              </div>
+                              {lead.nextSteps.length > 0 && (
+                                <>
+                                  <p className={styles.detailSectionTitle} style={{ marginTop: 10 }}>
+                                    Next steps
+                                  </p>
+                                  <ol className={styles.detailList}>
+                                    {lead.nextSteps.map((step, i) => (
+                                      <li key={i}>{step}</li>
+                                    ))}
+                                  </ol>
+                                </>
+                              )}
+                              <div className={styles.notesActions}>
+                                <button
+                                  onClick={() => downloadReport(lead.id, lead.name, "pdf")}
+                                  disabled={downloadingId === `${lead.id}-pdf`}
+                                  className={styles.downloadButton}
+                                >
+                                  {downloadingId === `${lead.id}-pdf` ? "Downloading…" : "Download PDF"}
+                                </button>
+                                <button
+                                  onClick={() => downloadReport(lead.id, lead.name, "docx")}
+                                  disabled={downloadingId === `${lead.id}-docx`}
+                                  className={styles.downloadButton}
+                                >
+                                  {downloadingId === `${lead.id}-docx` ? "Downloading…" : "Download Word"}
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className={`${styles.detailSection} ${styles.detailFull}`}>
+                            <p className={styles.detailSectionTitle}>Counsellor notes</p>
+                            <textarea
+                              value={notesDraft[lead.id] ?? lead.counsellorNotes ?? ""}
+                              onChange={(e) => setNotesDraft((prev) => ({ ...prev, [lead.id]: e.target.value }))}
+                              rows={3}
+                              className={styles.notesTextarea}
+                            />
+                            <div className={styles.notesActions}>
+                              <button onClick={() => saveNotes(lead.id)} disabled={busyId === lead.id} className={styles.smallButton}>
+                                {busyId === lead.id ? "Saving..." : "Save notes"}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const existing = (notesDraft[lead.id] ?? lead.counsellorNotes ?? "").trim();
+                                  if (existing && !window.confirm("Replace your current notes draft with an auto-generated summary?")) {
+                                    return;
+                                  }
+                                  setNotesDraft((prev) => ({ ...prev, [lead.id]: suggestCounsellorNote(lead) }));
+                                }}
+                                disabled={busyId === lead.id}
+                                className={styles.smallButton}
+                              >
+                                Suggest note
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -544,23 +550,3 @@ export function LeadsTable() {
     </div>
   );
 }
-
-const cellStyle: React.CSSProperties = { padding: "10px 12px" };
-const selectStyle: React.CSSProperties = { padding: "4px 6px", borderRadius: 6, border: "1px solid #ccc", fontSize: 12 };
-const smallButtonStyle: React.CSSProperties = {
-  padding: "4px 12px",
-  borderRadius: 6,
-  border: "1px solid #ccc",
-  background: "#fff",
-  cursor: "pointer",
-  fontSize: 12,
-};
-const downloadLinkStyle: React.CSSProperties = {
-  fontSize: 12,
-  fontWeight: 600,
-  color: "#1a5f7a",
-  textDecoration: "none",
-  border: "1px solid #ccc",
-  borderRadius: 6,
-  padding: "2px 8px",
-};

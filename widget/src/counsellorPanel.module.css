@@ -1,0 +1,154 @@
+.layout {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.errorBanner {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #f3c2bc;
+  background: #fdecea;
+  color: #c0392b;
+  font-size: 13px;
+  max-width: 420px;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  max-width: 420px;
+  font-size: 14px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.resultHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.statusPill {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.scoreText {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.stepsList {
+  padding-left: 20px;
+  margin: 6px 0 0;
+}
+
+.stepsList li {
+  margin-bottom: 4px;
+}
+
+.referenceBox {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.referenceHint {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.downloadRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.downloadButton {
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #1a5f7a;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.downloadButton:hover {
+  background: #eaf3f6;
+  border-color: #1a5f7a;
+}
+
+.pathSubtitle {
+  color: #6b7280;
+  font-size: 12px;
+  margin: 4px 0 10px;
+}
+
+.pathError {
+  color: #c0392b;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.pathList {
+  padding-left: 20px;
+  margin: 0 0 10px;
+}
+
+.pathList li {
+  margin-bottom: 8px;
+}
+
+.pathTimeframe {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.pathDescription {
+  font-size: 13px;
+}
+
+.secondaryButton {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #1a5f7a;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: #eaf3f6;
+  border-color: #1a5f7a;
+}
+
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

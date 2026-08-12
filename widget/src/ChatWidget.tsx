@@ -73,7 +73,11 @@ function ChatWidgetInner({
         ))}
         {isLoading && (
           <div className={styles.messageRow}>
-            <div className={styles.loadingBubble}>Thinking...</div>
+            <div className={styles.loadingBubble}>
+              <span />
+              <span />
+              <span />
+            </div>
           </div>
         )}
       </div>

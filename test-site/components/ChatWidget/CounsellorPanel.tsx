@@ -5,6 +5,9 @@ import { ChatWidget } from "./ChatWidget";
 import { ProfileForm } from "./ProfileForm";
 import { DocumentUpload } from "./DocumentUpload";
 import { useChat } from "./useChat";
+import { generateSessionId } from "./sessionId";
+import { WidgetErrorBoundary } from "./WidgetErrorBoundary";
+import styles from "./counsellorPanel.module.css";
 import type { LeadStatus, ProfileAnalyzeResponse, ProfileFormValues, StudyPathResponse, StudyPathStage } from "./types";
 
 export interface CounsellorPanelProps {
@@ -21,21 +24,16 @@ const STATUS_COLORS: Record<LeadStatus, string> = {
   Cold: "#1d4ed8",
 };
 
-const downloadButtonStyle: React.CSSProperties = {
-  flex: 1,
-  textAlign: "center",
-  padding: "8px 12px",
-  borderRadius: 8,
-  border: "1px solid #ccc",
-  background: "#fff",
-  color: "#1a5f7a",
-  fontSize: 13,
-  fontWeight: 600,
-  textDecoration: "none",
-};
+export function CounsellorPanel(props: CounsellorPanelProps) {
+  return (
+    <WidgetErrorBoundary label="CounsellorPanel" onError={props.onError}>
+      <CounsellorPanelInner {...props} />
+    </WidgetErrorBoundary>
+  );
+}
 
-export function CounsellorPanel({ apiUrl, countries, onError }: CounsellorPanelProps) {
-  const [sessionId] = useState(() => crypto.randomUUID());
+function CounsellorPanelInner({ apiUrl, countries, onError }: CounsellorPanelProps) {
+  const [sessionId] = useState(() => generateSessionId());
   const [analyzed, setAnalyzed] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
@@ -123,133 +121,58 @@ export function CounsellorPanel({ apiUrl, countries, onError }: CounsellorPanelP
   );
 
   return (
-    <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div className={styles.layout}>
+      <div className={styles.column}>
         <ProfileForm onSubmit={handleAnalyze} isSubmitting={isAnalyzing} disabled={analyzed} countries={countries} />
-        {analyzeError && (
-          <div
-            style={{
-              padding: "10px 14px",
-              borderRadius: 8,
-              border: "1px solid #f3c2bc",
-              background: "#fdecea",
-              color: "#c0392b",
-              fontSize: 13,
-              maxWidth: 420,
-            }}
-          >
-            {analyzeError}
-          </div>
-        )}
+        {analyzeError && <div className={styles.errorBanner}>{analyzeError}</div>}
         {result && (
-          <div
-            style={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 12,
-              padding: 16,
-              maxWidth: 420,
-              fontFamily: "system-ui, sans-serif",
-              fontSize: 14,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <span
-                style={{
-                  display: "inline-block",
-                  padding: "2px 10px",
-                  borderRadius: 999,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: "#fff",
-                  background: STATUS_COLORS[result.status],
-                }}
-              >
+          <div className={styles.card}>
+            <div className={styles.resultHeader}>
+              <span className={styles.statusPill} style={{ background: STATUS_COLORS[result.status] }}>
                 {result.status.toUpperCase()}
               </span>
-              <span style={{ color: "#666" }}>Score: {result.score.toFixed(1)} / 10</span>
+              <span className={styles.scoreText}>Score: {result.score.toFixed(1)} / 10</span>
             </div>
             <strong>Next steps</strong>
-            <ol style={{ paddingLeft: 20, margin: "6px 0 0" }}>
+            <ol className={styles.stepsList}>
               {result.nextSteps.map((step, i) => (
-                <li key={i} style={{ marginBottom: 4 }}>
-                  {step}
-                </li>
+                <li key={i}>{step}</li>
               ))}
             </ol>
-            <div
-              style={{
-                marginTop: 12,
-                padding: "8px 10px",
-                background: "#f7f7f7",
-                borderRadius: 8,
-                fontSize: 13,
-              }}
-            >
+            <div className={styles.referenceBox}>
               Your reference number: <strong>{result.referenceCode}</strong>
-              <div style={{ color: "#777", fontSize: 12, marginTop: 2 }}>
+              <div className={styles.referenceHint}>
                 Save this — you can use it to check your application status anytime.
               </div>
             </div>
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-              <a
-                href={`${apiUrl}/api/profile/${sessionId}/export?format=pdf`}
-                style={downloadButtonStyle}
-              >
+            <div className={styles.downloadRow}>
+              <a href={`${apiUrl}/api/profile/${sessionId}/export?format=pdf`} className={styles.downloadButton}>
                 Download PDF
               </a>
-              <a
-                href={`${apiUrl}/api/profile/${sessionId}/export?format=docx`}
-                style={downloadButtonStyle}
-              >
+              <a href={`${apiUrl}/api/profile/${sessionId}/export?format=docx`} className={styles.downloadButton}>
                 Download Word
               </a>
             </div>
           </div>
         )}
         {analyzed && (
-          <div
-            style={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 12,
-              padding: 16,
-              maxWidth: 420,
-              fontFamily: "system-ui, sans-serif",
-              fontSize: 14,
-            }}
-          >
+          <div className={styles.card}>
             <strong>Your long-term study path</strong>
-            <p style={{ color: "#777", fontSize: 12, margin: "4px 0 10px" }}>
+            <p className={styles.pathSubtitle}>
               A multi-stage roadmap beyond just your next course — where this could lead.
             </p>
-            {studyPathError && (
-              <div style={{ color: "#c0392b", fontSize: 13, marginBottom: 8 }}>{studyPathError}</div>
-            )}
+            {studyPathError && <div className={styles.pathError}>{studyPathError}</div>}
             {studyPath && (
-              <ol style={{ paddingLeft: 20, margin: "0 0 10px" }}>
+              <ol className={styles.pathList}>
                 {studyPath.map((stage, i) => (
-                  <li key={i} style={{ marginBottom: 8 }}>
-                    <strong>{stage.title}</strong>{" "}
-                    <span style={{ color: "#999", fontSize: 12 }}>({stage.estimatedTimeframe})</span>
-                    <div style={{ fontSize: 13 }}>{stage.description}</div>
+                  <li key={i}>
+                    <strong>{stage.title}</strong> <span className={styles.pathTimeframe}>({stage.estimatedTimeframe})</span>
+                    <div className={styles.pathDescription}>{stage.description}</div>
                   </li>
                 ))}
               </ol>
             )}
-            <button
-              onClick={handleGenerateStudyPath}
-              disabled={isGeneratingPath}
-              style={{
-                padding: "8px 14px",
-                borderRadius: 8,
-                border: "1px solid #ccc",
-                background: "#fff",
-                color: "#1a5f7a",
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: isGeneratingPath ? "not-allowed" : "pointer",
-                opacity: isGeneratingPath ? 0.6 : 1,
-              }}
-            >
+            <button onClick={handleGenerateStudyPath} disabled={isGeneratingPath} className={styles.secondaryButton}>
               {isGeneratingPath ? "Generating..." : studyPath ? "Regenerate" : "Generate my study path"}
             </button>
           </div>

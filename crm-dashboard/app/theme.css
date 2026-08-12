@@ -1,0 +1,44 @@
+:root {
+  --color-primary: #1a5f7a;
+  --color-primary-dark: #134a5f;
+  --color-primary-light: #eaf3f6;
+
+  --color-success: #1a7d3a;
+  --color-success-bg: #eaf7ee;
+  --color-warning: #b7791f;
+  --color-warning-bg: #fdf1d6;
+  --color-danger: #c0392b;
+  --color-danger-bg: #fdecea;
+  --color-info: #1d4ed8;
+  --color-info-bg: #dbeafe;
+
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  --transition: 0.15s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-900);
+}
