@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import styles from "./statusChecker.module.css";
+import { WidgetErrorBoundary } from "./WidgetErrorBoundary";
 import type { StatusLookupResponse } from "./types";
 
 export interface StatusCheckerProps {
@@ -14,7 +15,15 @@ export interface StatusCheckerProps {
  * code they were given after profile analysis, not just the browser they
  * originally submitted from.
  */
-export function StatusChecker({ apiUrl, onError }: StatusCheckerProps) {
+export function StatusChecker(props: StatusCheckerProps) {
+  return (
+    <WidgetErrorBoundary label="StatusChecker" onError={props.onError}>
+      <StatusCheckerInner {...props} />
+    </WidgetErrorBoundary>
+  );
+}
+
+function StatusCheckerInner({ apiUrl, onError }: StatusCheckerProps) {
   const [referenceCode, setReferenceCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<StatusLookupResponse | null>(null);

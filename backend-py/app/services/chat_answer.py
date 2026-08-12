@@ -102,6 +102,20 @@ _STOPWORDS = {
     "study", "course", "courses", "program", "programs", "university", "universities",
 }
 
+# course_name values are formatted like "Certificate in X" / "Diploma in Y" /
+# "Bachelor of Z", so a bare degree-level word matches course_name LIKE
+# '%word%' against nearly every row at that level, regardless of what the
+# question is actually about. Real bug this caught: "What is a No Objection
+# Certificate?" (a Nepal-specific policy FAQ entry, nothing to do with course
+# browsing) matched "certificate" and returned 8 random Certificate-level
+# courses ahead of the correct policy-PDF answer. A student naming an actual
+# field ("nursing", "business") is unaffected — only bare level words are
+# excluded here, not the field-synonym loop above.
+_COURSE_LEVEL_WORDS = {
+    "certificate", "certificates", "diploma", "diplomas", "bachelor", "bachelors",
+    "master", "masters", "postgraduate", "graduate", "doctoral", "doctorate",
+}
+
 # A message made up entirely of these words gets a real greeting reply
 # (see _small_talk_reply) instead of a course dump or the flat "no info"
 # message.
@@ -186,7 +200,7 @@ def _candidate_keywords(message: str) -> list[str]:
                 candidates.append(term)
 
     for w in words:
-        if len(w) > 3 and w not in _STOPWORDS and w not in candidates:
+        if len(w) > 3 and w not in _STOPWORDS and w not in _COURSE_LEVEL_WORDS and w not in candidates:
             candidates.append(w)
 
     return candidates[:6]

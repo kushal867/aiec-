@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Response } from "express";
 import cors from "cors";
 import { z } from "zod";
 import {
@@ -21,8 +21,43 @@ import { checkInactivity, generateFollowupSuggestion } from "../services/crmAssi
 import { predictConversion } from "../services/conversionPrediction";
 import { config } from "../config";
 import { requireAuth } from "../middleware/auth";
+import type { AuthTokenPayload } from "../services/auth";
+import { generateReportPdf, generateReportDocx } from "../services/reportExport";
+
+function sanitizeFilenamePart(value: string): string {
+  return value.replace(/[^a-zA-Z0-9-]+/g, "_").slice(0, 60) || "report";
+}
 
 export const adminLeadsRouter = Router();
+
+// Fetches a lead and enforces the same visibility rule GET /admin/leads
+// already applies (admins see everything; counsellors only their
+// assigned/suggested leads) — without this, a counsellor could read or
+// modify any other counsellor's leads by guessing a sequential lead_id,
+// bypassing the scoping that only existed on the list endpoint. Ported from
+// backend-py's _get_lead_or_404_scoped after the same class of bug (BOLA)
+// was found and fixed there but backend/ was never patched.
+function getLeadOr404Scoped(
+  db: ReturnType<typeof getDb>,
+  id: number,
+  user: AuthTokenPayload,
+  res: Response,
+): ReturnType<typeof getStudentById> | undefined {
+  const student = getStudentById(db, id);
+  if (!student) {
+    res.status(404).json({ error: "Lead not found" });
+    return undefined;
+  }
+  if (user.role === "counsellor") {
+    const isAssignedToThem = student.assigned_counsellor_id === user.userId;
+    const isSuggestedToThem = !student.assigned_counsellor_id && student.suggested_counsellor_id === user.userId;
+    if (!isAssignedToThem && !isSuggestedToThem) {
+      res.status(404).json({ error: "Lead not found" });
+      return undefined;
+    }
+  }
+  return student;
+}
 
 // CORS and auth are attached directly to these specific routes (not via the
 // shared app.use("/api", ...) chain in server.ts) so they can never leak
@@ -119,7 +154,9 @@ adminLeadsRouter.patch("/admin/leads/:id/notes", adminCors, requireAuth, (req, r
     res.status(400).json({ error: "Invalid id" });
     return;
   }
-  const updated = updateCounsellorNotes(getDb(), id, parsed.data.notes);
+  const db = getDb();
+  if (!getLeadOr404Scoped(db, id, req.user!, res)) return;
+  const updated = updateCounsellorNotes(db, id, parsed.data.notes);
   if (!updated) {
     res.status(404).json({ error: "Lead not found" });
     return;
@@ -142,7 +179,9 @@ adminLeadsRouter.patch("/admin/leads/:id/status", adminCors, requireAuth, (req, 
     res.status(400).json({ error: "Invalid id" });
     return;
   }
-  const updated = updateApplicationStatus(getDb(), id, parsed.data.applicationStatus);
+  const db = getDb();
+  if (!getLeadOr404Scoped(db, id, req.user!, res)) return;
+  const updated = updateApplicationStatus(db, id, parsed.data.applicationStatus);
   if (!updated) {
     res.status(404).json({ error: "Lead not found" });
     return;
@@ -202,7 +241,9 @@ adminLeadsRouter.post("/admin/leads/:id/contacted", adminCors, requireAuth, (req
     res.status(400).json({ error: "Invalid id" });
     return;
   }
-  const updated = markContacted(getDb(), id);
+  const db = getDb();
+  if (!getLeadOr404Scoped(db, id, req.user!, res)) return;
+  const updated = markContacted(db, id);
   if (!updated) {
     res.status(404).json({ error: "Lead not found" });
     return;
@@ -218,11 +259,8 @@ adminLeadsRouter.post("/admin/leads/:id/followup", adminCors, requireAuth, async
     return;
   }
   const db = getDb();
-  const student = getStudentById(db, id);
-  if (!student) {
-    res.status(404).json({ error: "Lead not found" });
-    return;
-  }
+  const student = getLeadOr404Scoped(db, id, req.user!, res);
+  if (!student) return;
   try {
     const inactivity = checkInactivity(student);
     const suggestion = await generateFollowupSuggestion(student, inactivity);
@@ -235,5 +273,44 @@ adminLeadsRouter.post("/admin/leads/:id/followup", adminCors, requireAuth, async
   } catch (err) {
     console.error("[admin/leads/followup] request failed:", err);
     res.status(500).json({ error: "Failed to generate follow-up suggestion. Please try again." });
+  }
+});
+
+// Staff-side equivalent of GET /profile/:sessionId/export, but auth-gated and
+// role-scoped (same visibility rule as every other route in this file)
+// instead of relying on session_id secrecy. The CRM dashboard should call
+// this, not the public profile export route, since session_id is generated
+// client-side, sent on every widget request, and displayed in this very
+// dashboard — nowhere near as good a secret as the intent behind the public
+// route assumes.
+adminLeadsRouter.get("/admin/leads/:id/export", adminCors, requireAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+  const format = req.query.format === "docx" ? "docx" : req.query.format === "pdf" ? "pdf" : "pdf";
+
+  const db = getDb();
+  const student = getLeadOr404Scoped(db, id, req.user!, res);
+  if (!student) return;
+
+  const filename = `AIEC-Report-${sanitizeFilenamePart(student.name)}.${format}`;
+
+  try {
+    if (format === "pdf") {
+      const buffer = await generateReportPdf(student);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      res.send(buffer);
+    } else {
+      const buffer = await generateReportDocx(student);
+      res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      res.send(buffer);
+    }
+  } catch (err) {
+    console.error("[admin/leads/export] request failed:", err);
+    res.status(500).json({ error: "Failed to generate report. Please try again." });
   }
 });

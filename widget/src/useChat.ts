@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import type { ChatApiResponse, ChatMessage } from "./types";
+import { generateSessionId } from "./sessionId";
 
 export interface UseChatOptions {
   apiUrl: string;
@@ -13,7 +14,7 @@ export function useChat({ apiUrl, initialMessage, sessionId: externalSessionId, 
     initialMessage ? [{ role: "assistant", content: initialMessage }] : [],
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId] = useState(() => externalSessionId ?? crypto.randomUUID());
+  const [sessionId] = useState(() => externalSessionId ?? generateSessionId());
 
   const sendMessage = useCallback(
     async (text: string) => {

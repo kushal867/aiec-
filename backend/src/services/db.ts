@@ -31,6 +31,12 @@ export function getDb(): Database.Database {
 
   fs.mkdirSync(path.dirname(config.databasePath), { recursive: true });
   db = new Database(config.databasePath);
+  // WAL lets readers (e.g. GET /admin/leads) proceed concurrently with a
+  // writer instead of blocking on the single rollback-journal lock — without
+  // this, concurrent staff + student traffic intermittently fails with
+  // "database is locked" once there's more than trivial concurrent load.
+  db.pragma("journal_mode = WAL");
+  db.pragma("busy_timeout = 30000");
   sqliteVec.load(db);
 
   db.exec(`

@@ -1,5 +1,6 @@
 import os
 import secrets
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -19,6 +20,13 @@ def _resolve_jwt_secret(database_path: Path) -> str:
     if secret_path.exists():
         return secret_path.read_text().strip()
 
+    print(
+        "[config] WARNING: JWT_SECRET is not set — generating one and persisting it to "
+        f"{secret_path}. This is fine for local dev. In production, if this directory "
+        "isn't on a persistent volume, every redeploy generates a NEW secret and logs out "
+        "every staff session. Set JWT_SECRET explicitly to avoid this.",
+        file=sys.stderr,
+    )
     generated = secrets.token_hex(48)
     secret_path.parent.mkdir(parents=True, exist_ok=True)
     secret_path.write_text(generated)

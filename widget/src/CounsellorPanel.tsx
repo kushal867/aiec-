@@ -3,6 +3,8 @@ import { ChatWidget } from "./ChatWidget";
 import { ProfileForm } from "./ProfileForm";
 import { DocumentUpload } from "./DocumentUpload";
 import { useChat } from "./useChat";
+import { generateSessionId } from "./sessionId";
+import { WidgetErrorBoundary } from "./WidgetErrorBoundary";
 import type { LeadStatus, ProfileAnalyzeResponse, ProfileFormValues, StudyPathResponse, StudyPathStage } from "./types";
 
 export interface CounsellorPanelProps {
@@ -32,8 +34,16 @@ const downloadButtonStyle: React.CSSProperties = {
   textDecoration: "none",
 };
 
-export function CounsellorPanel({ apiUrl, countries, onError }: CounsellorPanelProps) {
-  const [sessionId] = useState(() => crypto.randomUUID());
+export function CounsellorPanel(props: CounsellorPanelProps) {
+  return (
+    <WidgetErrorBoundary label="CounsellorPanel" onError={props.onError}>
+      <CounsellorPanelInner {...props} />
+    </WidgetErrorBoundary>
+  );
+}
+
+function CounsellorPanelInner({ apiUrl, countries, onError }: CounsellorPanelProps) {
+  const [sessionId] = useState(() => generateSessionId());
   const [analyzed, setAnalyzed] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);

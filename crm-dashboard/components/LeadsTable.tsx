@@ -99,6 +99,42 @@ export function LeadsTable() {
     return res.json();
   };
 
+  // Plain <a href> can't carry an Authorization header, and the old links
+  // pointed at the public, session_id-gated /profile/:sessionId/export route
+  // — session_id is generated client-side, sent on every widget request, and
+  // shown right here in this table, so it's a far weaker secret than it
+  // needs to be for full profile data. This fetches the auth-gated,
+  // role-scoped /admin/leads/:id/export route instead and downloads the blob
+  // directly, matching how every other admin action in this file authenticates.
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const downloadReport = async (id: number, name: string, format: "pdf" | "docx") => {
+    const key = `${id}-${format}`;
+    setDownloadingId(key);
+    setActionError(null);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/leads/${id}/export?format=${format}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `Request failed: ${res.status}`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `AIEC-Report-${name.replace(/[^a-zA-Z0-9-]+/g, "_")}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Failed to download report. Please try again.");
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   // Every admin action (notes, status, assign, contacted, follow-up
   // generation) funnels through here so none of them can silently swallow a
   // failure — previously each one only had a `finally` resetting the busy
@@ -337,18 +373,20 @@ export function LeadsTable() {
                         <strong>Phone:</strong> {lead.phone ?? "—"}
                         {lead.aiResponse && (
                           <span style={{ marginLeft: 12 }} onClick={(e) => e.stopPropagation()}>
-                            <a
-                              href={`${API_URL}/api/profile/${lead.sessionId}/export?format=pdf`}
-                              style={downloadLinkStyle}
+                            <button
+                              onClick={() => downloadReport(lead.id, lead.name, "pdf")}
+                              disabled={downloadingId === `${lead.id}-pdf`}
+                              style={{ ...downloadLinkStyle, background: "none", border: "none", cursor: "pointer" }}
                             >
-                              Download PDF
-                            </a>
-                            <a
-                              href={`${API_URL}/api/profile/${lead.sessionId}/export?format=docx`}
-                              style={{ ...downloadLinkStyle, marginLeft: 8 }}
+                              {downloadingId === `${lead.id}-pdf` ? "Downloading…" : "Download PDF"}
+                            </button>
+                            <button
+                              onClick={() => downloadReport(lead.id, lead.name, "docx")}
+                              disabled={downloadingId === `${lead.id}-docx`}
+                              style={{ ...downloadLinkStyle, marginLeft: 8, background: "none", border: "none", cursor: "pointer" }}
                             >
-                              Download Word
-                            </a>
+                              {downloadingId === `${lead.id}-docx` ? "Downloading…" : "Download Word"}
+                            </button>
                           </span>
                         )}
                         <br />

@@ -37,6 +37,13 @@ function DocumentSlot({ apiUrl, sessionId, type, label, hint, onError, onCheckli
   const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState<DocumentVerificationResponse | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  // Previously the catch block only called the *optional* onError prop and
+  // never touched local state — an integrator who didn't wire onError got
+  // total silent failure: the button reverted to "Replace file" with no
+  // indication anything went wrong, so a student would believe a citizenship
+  // document/IELTS certificate was submitted when it never reached the
+  // server. This is shown regardless of whether onError is wired up.
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,6 +51,7 @@ function DocumentSlot({ apiUrl, sessionId, type, label, hint, onError, onCheckli
     setFileName(file.name);
     setIsUploading(true);
     setResult(null);
+    setUploadError(null);
 
     try {
       const formData = new FormData();
@@ -60,7 +68,9 @@ function DocumentSlot({ apiUrl, sessionId, type, label, hint, onError, onCheckli
       setResult(data);
       onChecklistUpdate(data.checklist);
     } catch (err) {
-      onError?.(err instanceof Error ? err : new Error("Unknown document upload error"));
+      const error = err instanceof Error ? err : new Error("Unknown document upload error");
+      setUploadError("Upload failed — please try again. Your document was not submitted.");
+      onError?.(error);
     } finally {
       setIsUploading(false);
       e.target.value = "";
@@ -83,7 +93,9 @@ function DocumentSlot({ apiUrl, sessionId, type, label, hint, onError, onCheckli
           className={styles.fileInput}
         />
       </label>
-      {fileName && <span className={styles.fileName}>{fileName}</span>}
+      {fileName && !uploadError && <span className={styles.fileName}>{fileName}</span>}
+
+      {uploadError && <div className={styles.uploadError}>{uploadError}</div>}
 
       {result && (
         <div className={styles.result}>

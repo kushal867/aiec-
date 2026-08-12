@@ -1,5 +1,6 @@
 import { useState, type CSSProperties, type FormEvent } from "react";
 import { useChat } from "./useChat";
+import { WidgetErrorBoundary } from "./WidgetErrorBoundary";
 import styles from "./styles.module.css";
 
 export interface ChatWidgetProps {
@@ -18,7 +19,15 @@ export interface ChatWidgetProps {
   chat?: ReturnType<typeof useChat>;
 }
 
-export function ChatWidget({
+export function ChatWidget(props: ChatWidgetProps) {
+  return (
+    <WidgetErrorBoundary label="ChatWidget" onError={props.onError}>
+      <ChatWidgetInner {...props} />
+    </WidgetErrorBoundary>
+  );
+}
+
+function ChatWidgetInner({
   apiUrl,
   title = "Chat to a Counsellor",
   placeholder = "Ask about visas, fees, intake dates...",

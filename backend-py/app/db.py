@@ -161,8 +161,14 @@ def get_db() -> sqlite3.Connection:
         return conn
 
     config.database_path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(config.database_path))
+    conn = sqlite3.connect(str(config.database_path), timeout=30)
     conn.row_factory = sqlite3.Row
+    # WAL lets readers (e.g. GET /admin/leads) proceed concurrently with a
+    # writer instead of blocking on the single rollback-journal lock — without
+    # this, concurrent staff + student traffic intermittently fails with
+    # "database is locked" once there's more than trivial concurrent load.
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA busy_timeout=30000")
     conn.enable_load_extension(True)
     sqlite_vec.load(conn)
     conn.enable_load_extension(False)

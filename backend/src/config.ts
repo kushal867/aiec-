@@ -24,6 +24,12 @@ function resolveJwtSecret(): string {
   if (fs.existsSync(secretPath)) {
     return fs.readFileSync(secretPath, "utf8").trim();
   }
+  console.warn(
+    `[config] WARNING: JWT_SECRET is not set — generating one and persisting it to ${secretPath}. ` +
+      "This is fine for local dev. In production, if this directory isn't on a persistent volume, " +
+      "every redeploy generates a NEW secret and logs out every staff session. Set JWT_SECRET " +
+      "explicitly to avoid this.",
+  );
   const generated = crypto.randomBytes(48).toString("hex");
   fs.mkdirSync(path.dirname(secretPath), { recursive: true });
   fs.writeFileSync(secretPath, generated, { mode: 0o600 });

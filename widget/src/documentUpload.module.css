@@ -114,3 +114,13 @@
   font-size: 12px;
   color: #1a7d3a;
 }
+
+.uploadError {
+  margin-top: 4px;
+  padding: 8px 10px;
+  background: #fdecea;
+  border: 1px solid #f0b4ac;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #c0392b;
+}

@@ -1,0 +1,27 @@
+# Reference deployment config for backend/ (the Claude-powered Express
+# service). The critical thing this file does that a bare `docker run`
+# doesn't: it mounts a NAMED, PERSISTENT volume at /app/data (the SQLite DB,
+# uploaded student documents, and JWT secret all live there — see the
+# Dockerfile and src/config.ts). Skip the volume and every redeploy silently
+# starts from an empty database.
+#
+# JWT_SECRET and ANTHROPIC_API_KEY are required here on purpose
+# (${VAR:?...} fails the whole `docker compose up` with a clear error if
+# unset) rather than failing silently or falling back to a secret that
+# won't survive a redeploy without a volume.
+services:
+  backend:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?Set ANTHROPIC_API_KEY in your environment/.env before deploying}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in your environment/.env before deploying — see README}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-http://localhost:3000}
+      ADMIN_ALLOWED_ORIGIN: ${ADMIN_ALLOWED_ORIGIN:-http://localhost:3002}
+    volumes:
+      - aiec_backend_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  aiec_backend_data:

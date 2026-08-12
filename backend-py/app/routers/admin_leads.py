@@ -1,8 +1,10 @@
 import json
 import logging
+import re
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from app.db import (
@@ -23,6 +25,7 @@ from app.services.application_status import explain_application_status
 from app.services.conversion_model import predict_conversion
 from app.services.crm_assistant import check_inactivity, generate_followup_suggestion
 from app.services.document_checklist import build_document_checklist
+from app.services.report_export import generate_report_docx, generate_report_pdf
 from app.services.auth import AuthTokenPayload
 
 router = APIRouter()
@@ -196,3 +199,41 @@ def followup(lead_id: int, user: AuthTokenPayload = Depends(require_auth)):
     except Exception:
         logger.exception("[admin/leads/followup] request failed")
         raise HTTPException(status_code=500, detail="Failed to generate follow-up suggestion. Please try again.")
+
+
+def _sanitize_filename_part(value: str) -> str:
+    return re.sub(r"[^a-zA-Z0-9-]+", "_", value)[:60] or "report"
+
+
+# Staff-side equivalent of GET /profile/{session_id}/export, but auth-gated and
+# role-scoped (same visibility rule as every other route in this file) instead
+# of relying on session_id secrecy. The CRM dashboard should call this, not the
+# public profile export route, since session_id is generated client-side, sent
+# on every widget request, and displayed in this very dashboard — nowhere near
+# as good a secret as the intent behind the public route assumes.
+@router.get("/admin/leads/{lead_id}/export")
+def export_lead(lead_id: int, format: str = Query(default="pdf"), user: AuthTokenPayload = Depends(require_auth)):
+    if format not in ("pdf", "docx"):
+        raise HTTPException(status_code=400, detail="Query param 'format' must be 'pdf' or 'docx'")
+
+    conn = get_db()
+    student = _get_lead_or_404_scoped(conn, lead_id, user)
+
+    filename = f"AIEC-Report-{_sanitize_filename_part(student['name'])}.{format}"
+
+    try:
+        if format == "pdf":
+            buffer = generate_report_pdf(student)
+            media_type = "application/pdf"
+        else:
+            buffer = generate_report_docx(student)
+            media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    except Exception:
+        logger.exception("[admin/leads/export] request failed")
+        raise HTTPException(status_code=500, detail="Failed to generate report. Please try again.")
+
+    return Response(
+        content=buffer,
+        media_type=media_type,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )

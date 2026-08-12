@@ -1,0 +1,26 @@
+# Reference deployment config for backend-py. The critical thing this file
+# does that a bare `docker run` doesn't: it mounts a NAMED, PERSISTENT volume
+# at /app/data (the SQLite DB, uploaded student documents, JWT secret, and
+# trained model all live there — see the Dockerfile and app/config.py). Skip
+# the volume and every redeploy silently starts from an empty database.
+#
+# JWT_SECRET is required here on purpose (${JWT_SECRET:?...} fails the whole
+# `docker compose up` with a clear error if it's unset) — app/config.py will
+# silently auto-generate one instead if you run the container without this
+# file, which is fine for local dev but means every redeploy invalidates
+# every staff login session.
+services:
+  backend:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in your environment/.env before deploying — see README}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-http://localhost:3000}
+      ADMIN_ALLOWED_ORIGIN: ${ADMIN_ALLOWED_ORIGIN:-http://localhost:3002}
+    volumes:
+      - aiec_backend_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  aiec_backend_data:
