@@ -541,3 +541,24 @@ def get_course_counts_by_country(conn: sqlite3.Connection) -> list[sqlite3.Row]:
     return conn.execute(
         "SELECT country, COUNT(*) as count FROM courses GROUP BY country ORDER BY country"
     ).fetchall()
+
+
+def get_country_stats(conn: sqlite3.Connection, countries: list[str]) -> list[sqlite3.Row]:
+    """Aggregate fee/IELTS stats per country, computed straight from the real
+    course table — used for chat's "compare X vs Y" replies so the numbers
+    are always real catalog data, never a guess."""
+    placeholders = ", ".join(f":country{i}" for i in range(len(countries)))
+    params = {f"country{i}": c for i, c in enumerate(countries)}
+    return conn.execute(
+        f"""SELECT country,
+                   COUNT(*) as course_count,
+                   MIN(fee_per_year) as min_fee,
+                   MAX(fee_per_year) as max_fee,
+                   AVG(fee_per_year) as avg_fee,
+                   MIN(ielts_required) as min_ielts,
+                   MAX(ielts_required) as max_ielts
+            FROM courses
+            WHERE country IN ({placeholders})
+            GROUP BY country""",
+        params,
+    ).fetchall()

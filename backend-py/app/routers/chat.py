@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from app.limiter import limiter
 from app.config import config
 from app.db import get_db, get_student_by_session_id
-from app.services.chat_answer import NO_INFO_REPLY, generate_answer
+from app.services.chat_answer import NO_INFO_REPLY, NO_INFO_REPLY_NE, generate_answer
 from app.services.lead_scoring import student_row_to_profile
 from app.services.retrieval import retrieve_relevant_chunks
 
@@ -52,7 +52,7 @@ def chat(request: Request, body: ChatRequest):
         raise HTTPException(status_code=500, detail="Failed to generate a response. Please try again.")
 
     logger.info("[chat] session=%s student_found=%s", body.sessionId or "-", bool(student))
-    if result.reply == NO_INFO_REPLY:
+    if result.reply in (NO_INFO_REPLY, NO_INFO_REPLY_NE):
         # The single most useful signal for improving chat_answer.py's
         # coverage going forward: what real students actually typed that we
         # had nothing for, instead of guessing likely phrasings ourselves.

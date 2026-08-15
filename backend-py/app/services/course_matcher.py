@@ -220,13 +220,13 @@ def diagnose_no_match(conn: sqlite3.Connection, profile: StudentProfile) -> NoMa
 
 def format_fee(fee_per_year: float | None) -> str:
     if fee_per_year is None:
-        return "fee n/a"
+        return "fee not listed"
     return f"${fee_per_year:,.0f}/year"
 
 
 def format_duration(duration_years: float | None) -> str:
     if duration_years is None:
-        return "duration n/a"
+        return "duration not listed"
     if duration_years < 1:
         months = round(duration_years * 12)
         return f"{months} month" + ("" if months == 1 else "s")
@@ -247,24 +247,46 @@ def format_course_location(course: Any) -> str:
     return f"{d['university']}, {d['country']}" if d.get("university") else d["country"]
 
 
-def format_courses_for_prompt(courses: list[Any]) -> str:
-    """Renders courses for direct display in the chat widget — a numbered,
-    two-line card per course (name/location, then key facts), not one dense
-    run-on sentence. The widget preserves newlines (white-space: pre-wrap)
-    but doesn't render markdown, so formatting is plain text only."""
+def format_courses_for_prompt(courses: list[Any], lang: str = "en") -> str:
+    """Renders courses for direct display in the chat widget — a numbered
+    line per course, written as a plain sentence (comma-separated facts, "in"
+    for location, "intakes in" for dates) rather than a "·"-delimited spec
+    table with a raw "Intake:" label — the old format read like a database
+    export, not something a person typed. The widget preserves newlines
+    (white-space: pre-wrap) but doesn't render markdown, so formatting is
+    plain text only.
+
+    lang: "en" (default) or "ne" for Romanized Nepali, matching whichever
+    language the student's own message was in (see chat_answer.py's
+    _is_nepali_roman). Only the connecting words/labels are localized —
+    course names, universities, and countries are proper nouns and stay
+    as-is, and fee/duration keep their existing English-form units (numbers
+    and units like "$"/"yr" are commonly left in English even inside
+    Nepali sentences)."""
     if not courses:
-        return "(no matching courses found)"
+        return "(hamro record ma milne course fela parena)" if lang == "ne" else "(no matching courses found)"
 
     lines = []
     for i, c in enumerate(courses, start=1):
         d = _row_to_dict(c) if not isinstance(c, dict) else c
         location = format_course_location(d)
-        ielts = f"IELTS {d['ielts_required']}+" if d.get("ielts_required") is not None else "IELTS n/a"
-        facts = " · ".join(
-            [d["course_level"], ielts, format_fee(d.get("fee_per_year")), format_duration(d.get("duration_years"))]
-        )
+        has_ielts = d.get("ielts_required") is not None
         intake = d.get("intake")
-        if intake:
-            facts += f" · Intake: {intake}"
-        lines.append(f"{i}. {d['course_name']} — {location}\n   {facts}")
+
+        if lang == "ne":
+            ielts = f"IELTS {d['ielts_required']}+ chahincha" if has_ielts else "IELTS chaidaina"
+            fee = format_fee(d.get("fee_per_year")) if d.get("fee_per_year") is not None else "fee thaha chaina"
+            duration = (
+                format_duration(d.get("duration_years")) if d.get("duration_years") is not None else "samaya thaha chaina"
+            )
+            facts = [d["course_level"], ielts, fee, duration]
+            if intake:
+                facts.append(f"intake {intake} ma huncha")
+            lines.append(f"{i}. {d['course_name']} — {location}, {', '.join(facts)}")
+        else:
+            ielts = f"IELTS {d['ielts_required']}+" if has_ielts else "no IELTS requirement"
+            facts = [d["course_level"], ielts, format_fee(d.get("fee_per_year")), format_duration(d.get("duration_years"))]
+            if intake:
+                facts.append(f"intakes in {intake}")
+            lines.append(f"{i}. {d['course_name']} in {location} — {', '.join(facts)}")
     return "\n".join(lines)

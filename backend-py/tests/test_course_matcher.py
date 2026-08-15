@@ -73,7 +73,7 @@ def test_format_duration_converts_fractional_years_to_months():
     assert format_duration(0.1) == "1 month"
     assert format_duration(1.0) == "1 yr"
     assert format_duration(2.0) == "2 yrs"
-    assert format_duration(None) == "duration n/a"
+    assert format_duration(None) == "duration not listed"
 
 
 def test_format_fee_uses_thousands_separator_no_trailing_decimal():
@@ -81,7 +81,7 @@ def test_format_fee_uses_thousands_separator_no_trailing_decimal():
 
     assert format_fee(1000) == "$1,000/year"
     assert format_fee(24000.0) == "$24,000/year"
-    assert format_fee(None) == "fee n/a"
+    assert format_fee(None) == "fee not listed"
 
 
 # --- regression: profile report and study path both repeated "at a partner
