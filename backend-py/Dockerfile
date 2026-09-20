@@ -20,6 +20,13 @@ RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTr
 
 COPY app ./app
 
+# Static seed assets (course catalog SQL, knowledge-base PDFs, partner
+# university JSON) — checked into git, needed by the one-time seed/ingest
+# scripts. Everything else under data/ (the SQLite DB, uploads, JWT secret)
+# is git-ignored and generated at runtime, so a fresh clone's data/ directory
+# only ever contains these static files at build time.
+COPY data ./data
+
 # Real data lives here: the SQLite database (every student record), uploaded
 # student documents (citizenship, marksheets, IELTS certificates), the JWT
 # signing secret, and the trained conversion-prediction model.
@@ -30,6 +37,12 @@ COPY app ./app
 # uploaded document is permanently lost, and a new JWT secret is generated
 # each time (logging out every staff session). See docker-compose.yml, which
 # wires this correctly.
+#
+# Docker seeds a fresh NAMED volume from whatever the image already has at
+# the mount path on first container start — so the COPY above (seed SQL,
+# PDFs, university JSON) ends up inside the volume automatically, while
+# subsequent runs/redeploys keep whatever the volume already accumulated
+# (the real database, uploads, etc.) instead of overwriting it.
 VOLUME ["/app/data"]
 
 EXPOSE 3001
