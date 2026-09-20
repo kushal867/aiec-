@@ -7,9 +7,17 @@ from pydantic import BaseModel, Field
 from app.limiter import limiter
 from app.config import config
 from app.db import get_db, get_student_by_session_id
-from app.services.chat_answer import NO_INFO_REPLY, NO_INFO_REPLY_NE
+from app.services.chat_answer import NO_INFO_REPLY, NO_INFO_REPLY_NE, generate_answer
 from app.services.lead_scoring import student_row_to_profile
-from app.services.local_chat_generation import generate_grounded_answer
+from app.services.retrieval import retrieve_relevant_chunks
+
+# No-LLM deterministic mode (see chat_answer.generate_answer) — no GPU, no
+# torch/transformers/peft dependency, works on any server including a bare
+# 1-vCPU VPS. To switch to the fine-tuned local-model mode instead (more
+# natural phrasing, but requires a GPU or a CPU-quantized model server —
+# see local_chat_generation.py and the deployment docs), swap this import
+# for `from app.services.local_chat_generation import generate_grounded_answer`
+# and replace the generate_answer(...) call below accordingly.
 
 router = APIRouter()
 logger = logging.getLogger("aiec.chat")
@@ -46,11 +54,8 @@ def chat(request: Request, body: ChatRequest):
     profile = student_row_to_profile(student) if student else None
 
     try:
-        # Local fine-tuned model, RAG-grounded on the real course DB + ingested
-        # policy PDFs (see app/services/local_chat_generation.py) — no Claude,
-        # no external API call. Retrieval happens inside generate_grounded_answer
-        # itself so it can also feed course-table lookups into the same prompt.
-        result = generate_grounded_answer(latest_user_message.content, profile)
+        retrieved_chunks = retrieve_relevant_chunks(latest_user_message.content)
+        result = generate_answer(latest_user_message.content, retrieved_chunks, profile)
     except Exception:
         logger.exception("[chat] request failed")
         raise HTTPException(status_code=500, detail="Failed to generate a response. Please try again.")
