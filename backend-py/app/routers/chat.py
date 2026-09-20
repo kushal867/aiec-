@@ -7,9 +7,9 @@ from pydantic import BaseModel, Field
 from app.limiter import limiter
 from app.config import config
 from app.db import get_db, get_student_by_session_id
-from app.services.chat_answer import NO_INFO_REPLY, NO_INFO_REPLY_NE, generate_answer
+from app.services.chat_answer import NO_INFO_REPLY, NO_INFO_REPLY_NE
 from app.services.lead_scoring import student_row_to_profile
-from app.services.retrieval import retrieve_relevant_chunks
+from app.services.local_chat_generation import generate_grounded_answer
 
 router = APIRouter()
 logger = logging.getLogger("aiec.chat")
@@ -30,9 +30,10 @@ class ChatRequest(BaseModel):
 def chat(request: Request, body: ChatRequest):
     messages = body.messages
 
-    # No LLM call anymore, so there's no first-message-role API constraint to
-    # satisfy — but the widget still seeds a leading assistant greeting, so
-    # this trimming stays to find the latest actual user message.
+    # Only the latest message is used (the local model answers single-turn,
+    # grounded on fresh retrieval each time, not a running conversation) —
+    # but the widget still seeds a leading assistant greeting, so this
+    # trimming stays to find the latest actual user message.
     first_user_idx = next((i for i, m in enumerate(messages) if m.role == "user"), -1)
     trimmed_messages = messages[first_user_idx:] if first_user_idx != -1 else []
 
@@ -45,8 +46,11 @@ def chat(request: Request, body: ChatRequest):
     profile = student_row_to_profile(student) if student else None
 
     try:
-        retrieved_chunks = retrieve_relevant_chunks(latest_user_message.content)
-        result = generate_answer(latest_user_message.content, retrieved_chunks, profile)
+        # Local fine-tuned model, RAG-grounded on the real course DB + ingested
+        # policy PDFs (see app/services/local_chat_generation.py) — no Claude,
+        # no external API call. Retrieval happens inside generate_grounded_answer
+        # itself so it can also feed course-table lookups into the same prompt.
+        result = generate_grounded_answer(latest_user_message.content, profile)
     except Exception:
         logger.exception("[chat] request failed")
         raise HTTPException(status_code=500, detail="Failed to generate a response. Please try again.")

@@ -1,0 +1,1770 @@
+[
+  {
+    "name": "Crown Institute of Higher Education (CIHE)",
+    "country": "Australia",
+    "city": "Sydney, Canberra and Perth",
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": true
+  },
+  {
+    "name": "Morehead State University (MSU)",
+    "country": "USA",
+    "city": "Kentucky",
+    "qs_rank": 927,
+    "tuition": null,
+    "has_scholarship": true
+  },
+  {
+    "name": "AIBI Higher Education (AIBI HE)",
+    "country": "Australia",
+    "city": "Sydney and Melbourne",
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": true
+  },
+  {
+    "name": "Southern Academy of Higher Education (SAHE)",
+    "country": "Australia",
+    "city": "Sydney",
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": true
+  },
+  {
+    "name": "Higher Education Leadership Institute (HELI)",
+    "country": "Australia",
+    "city": "Sydney and Melbourne",
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": true
+  },
+  {
+    "name": "College of Health Sciences (CHS)",
+    "country": "Australia",
+    "city": "Sydney and Brisbane",
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": true
+  },
+  {
+    "name": "Asia Pacific International College (APIC)",
+    "country": "Australia",
+    "city": "Sydney, Melbourne and Brisbane",
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": true
+  },
+  {
+    "name": "Victoria University (VU)",
+    "country": "Australia",
+    "city": "Sydney",
+    "qs_rank": 27,
+    "tuition": "AUD 35,000-45,000/yr",
+    "has_scholarship": true
+  },
+  {
+    "name": "York Region District School Board (YRDSB)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Winston College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Willowdale High School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Western Community College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Vancouver School Board",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Vancouver Community College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Urban International School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Unisus School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Trebas Institute",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Toronto Metropolitan University English Language Institute",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Toronto Film School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Toronto District School Board (TDSB)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Toronto Catholic District School Board",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Suncrest College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Stenberg College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "St. Lawrence College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "St. John's-Kilmarnock School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "St. Clair College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Sheridan College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Senaca Polytechnic",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Selkirk College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Sault College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Royal Canadian Institute of International Studies (RCIIS)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Ridley College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Richmond School District (RSD38)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Renison University College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Red River College Polytechnic",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Red Deer Polytechnic (Red Deer College)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Queen's University",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Pattison High School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Oulton College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Ottawa-Carleton District School Board (OCDSB)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Other Undergraduate Programs",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Ontario College of Art & Design University",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Olds College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Okanagan College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "North West College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Northern Lights College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Northern College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "NorQuest College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Niagara College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "New Brunswick Community College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Montreal College of Information Technology",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Mohawk College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Milestone College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "McKenzie College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Matrix College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Manitoba Institute of Trades and Technology",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Loyalist College - Belleville Campus",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "LaSalle College - Vancouver",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "LaSalle College - Montreal",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "LaSalle College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Langara College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Lakeland College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "King's University College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Keyano College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Justice Institute of British Columbia",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "International College of Manitoba (ICM)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "International Business University",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "ILSC Language Schools",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "ILSC and Greystone College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Heartland International English School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Great Plaines College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Georgian College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "George Brown College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Fleming College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Fieldstone Day School / Fieldstone King's College School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Fanshawe College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Fairleigh Dickinson University - Vancouver",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Douglas College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Coquitlam School District",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Coquitlam College High School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Coquitlam College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Confederation College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Conestoga College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Columbia International College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Columbia College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "College St. Michel",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "College of the Rockies",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "College of New Caledonia",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "College National",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Coast Mountain College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Centennial College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Cégep de la Gaspésie et des Iles:",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Academic Programs",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Canadore College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Canadian College for Higher Studies",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Canadian College English Language",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Canadian College - St. Lawrence",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Canadian College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Cambrian College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Calgary Catholic School District (CCDSB)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Calgary Board of Education (CBE)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Burnaby School District 41 (BSD41)",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Bronte College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Brighton College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Bow Valley College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Bodwell High School",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Blyth Academy",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Bishop's University",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Birmingham International Collegiate of Canada",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Assiniboine Community College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Ascent College of Technology",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Alexander College",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Adler University - Vancouver",
+    "country": "Canada",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Danford Higher Education",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "AEI AUSTRALIA",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "National Polytechnic of Australia (NPA)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Brooklyn International College (BIC)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australian Vocational Training Academy (AVTA)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Reach Community College (RCC)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australia Institute of Business and Technology – International (AIBT-I)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australia Institute of Business and Technology (AIBT)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Medicus College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Academia of Trade",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Montford International College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Ultimate Institute of Australia",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Institute of Tertiary and Higher Education Australia (ITHEA)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "RGIT Australia",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Auscanus Institute of Australia (AIA)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Ridge International College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Gamma College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Dalton College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australian Data and Cyber Institute",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Ransford College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Nova Anglia College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Gold Coast Dive Centre",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "The Institute of International Studies (TIIS)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "King's School of Culinary Arts",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Apeiro Institute",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australian Polytechnic College Melbourne and Sydney",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australian Skills Management Institute",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Laurus Education (Paragon Polytechnic, Hilton Academy,Allied Institute, Everthought College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australian Engineering College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "TKL College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australian Harbour International College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "National Academy of Professional Studies (NAPS)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Axis Institute",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Queensford College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Spencer College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Baxter Institute",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "WESTIN COLLEGE",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Keystone College of Business and Technology (KCBT)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Canberra College of Management & Technology (CCMT)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Einstein College Of Australia",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australian Sovereign College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Stanley/Skill Australia",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Universal Higher Education",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Blue Lotus College",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Skyline International College/Skyline Higher Education Australia (SHEA)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Victorian Institute of Technology (VIT)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Apex International College/ Apex Higher Education (AIC/AHE)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Institute of Science Management and Technology",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Sydney institute of Higher Education",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "AIBI Higher Education",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Crown Institute of Business and Technology/Crown Institute of Higher Education (CIBT/CIHE)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Southern Academy of business and Technology/ Souther Academy of higher Education (SABT/SAHE)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Sydney Metropolitan International College/Sydney Met Higher Education (SMIC/SMHE)",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australian Institute of Advanced Technologies",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Ozford Institute of Higher Education",
+    "country": "Australia",
+    "city": "Melbourne",
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Canberra Sydney Hills (UCSH)",
+    "country": "Australia",
+    "city": "Sydney",
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of the Sunshine",
+    "country": "Australia",
+    "city": null,
+    "qs_rank": null,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Waterloo",
+    "country": "Canada",
+    "city": "Waterloo",
+    "qs_rank": 4,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Alberta University of the Arts",
+    "country": "Canada",
+    "city": "Edmonton",
+    "qs_rank": 6,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Australian National Institute of Management and Commerce (IMC)",
+    "country": "Australia",
+    "city": "Canberra",
+    "qs_rank": 6,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "York University",
+    "country": "Canada",
+    "city": "Toronto",
+    "qs_rank": 8,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Western University",
+    "country": "Canada",
+    "city": "London",
+    "qs_rank": 11,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Victoria",
+    "country": "Canada",
+    "city": "Victoria",
+    "qs_rank": 14,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Toronto Metropolitan University",
+    "country": "Canada",
+    "city": "Toronto",
+    "qs_rank": 15,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Carleton University",
+    "country": "Canada",
+    "city": "Ottawa",
+    "qs_rank": 16,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Guelph",
+    "country": "Canada",
+    "city": "Guelph",
+    "qs_rank": 18,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Western Sydney College (WSC)",
+    "country": "Australia",
+    "city": "Penrith",
+    "qs_rank": 18,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Ottawa",
+    "country": "Canada",
+    "city": "Ottawa",
+    "qs_rank": 20,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Saskatchewan (USASK)",
+    "country": "Canada",
+    "city": "Saskatoon",
+    "qs_rank": 21,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Saskatchewan Polytechnic",
+    "country": "Canada",
+    "city": "Saskatoon",
+    "qs_rank": 21,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Tasmania",
+    "country": "Australia",
+    "city": "Melbourne",
+    "qs_rank": 21,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Manitoba",
+    "country": "Canada",
+    "city": "Winnipeg",
+    "qs_rank": 23,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of New Brunswick",
+    "country": "Canada",
+    "city": "Fredericton",
+    "qs_rank": 26,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Brock University",
+    "country": "Canada",
+    "city": "St. Catharines",
+    "qs_rank": 27,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Victoria University",
+    "country": "Australia",
+    "city": "Melbourne",
+    "qs_rank": 27,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Victoria University",
+    "country": "Australia",
+    "city": "Brisbane",
+    "qs_rank": 27,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Wilfrid Laurier University",
+    "country": "Canada",
+    "city": "Waterloo",
+    "qs_rank": 28,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Windsor",
+    "country": "Canada",
+    "city": "Windsor",
+    "qs_rank": 29,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Canberra",
+    "country": "Australia",
+    "city": "Canberra",
+    "qs_rank": 30,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Regina",
+    "country": "Canada",
+    "city": "Regina",
+    "qs_rank": 31,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "British Columbia Institute of Technology",
+    "country": "Canada",
+    "city": "Burnaby",
+    "qs_rank": 32,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of the Sunshine coast (UTSC)",
+    "country": "Australia",
+    "city": "Sippy Downs",
+    "qs_rank": 33,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Lethbridge",
+    "country": "Canada",
+    "city": "Lethbridge",
+    "qs_rank": 36,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Trent University",
+    "country": "Canada",
+    "city": "Peterborough",
+    "qs_rank": 38,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Ontario Tech University",
+    "country": "Canada",
+    "city": "Oshawa",
+    "qs_rank": 39,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Lakehead University",
+    "country": "Canada",
+    "city": "Thunder Bay",
+    "qs_rank": 40,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Acadia University",
+    "country": "Canada",
+    "city": "Wolfville",
+    "qs_rank": 42,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Thompson Rivers University",
+    "country": "Canada",
+    "city": "Kamloops",
+    "qs_rank": 43,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Prince Edward Island",
+    "country": "Canada",
+    "city": "Charlottetown",
+    "qs_rank": 44,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Mount Allison University",
+    "country": "Canada",
+    "city": "Sackville",
+    "qs_rank": 46,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "MacEwan University",
+    "country": "Canada",
+    "city": "Edmonton",
+    "qs_rank": 47,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of Northern British Columbia",
+    "country": "Canada",
+    "city": "Prince George",
+    "qs_rank": 49,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Mount Royal University",
+    "country": "Canada",
+    "city": "Calgary",
+    "qs_rank": 51,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Southern Alberta Institute of Technology",
+    "country": "Canada",
+    "city": "Calgary",
+    "qs_rank": 52,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Kwantlen Polytechnic University",
+    "country": "Canada",
+    "city": "Surrey",
+    "qs_rank": 53,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Laurentian University",
+    "country": "Canada",
+    "city": "Sudbury",
+    "qs_rank": 54,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Northern Alberta Institute of Technology (NAIT)",
+    "country": "Canada",
+    "city": "Edmonton",
+    "qs_rank": 55,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University of the Fraser Valley (UFV)",
+    "country": "Canada",
+    "city": "Abbotsford",
+    "qs_rank": 59,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Trinity Western University",
+    "country": "Canada",
+    "city": "Langley",
+    "qs_rank": 60,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Royal Roads University",
+    "country": "Canada",
+    "city": "Victoria",
+    "qs_rank": 62,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Mount Saint Vincent University",
+    "country": "Canada",
+    "city": "Halifax",
+    "qs_rank": 67,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Capilano University",
+    "country": "Canada",
+    "city": "North Vancouver",
+    "qs_rank": 68,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Algoma University",
+    "country": "Canada",
+    "city": "Sault Ste. Marie",
+    "qs_rank": 74,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "St. Thomas University (CAN)",
+    "country": "Canada",
+    "city": "Fredericton",
+    "qs_rank": 76,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Concordia University of Edmonton",
+    "country": "Canada",
+    "city": "Edmonton",
+    "qs_rank": 77,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "University Canada West",
+    "country": "Canada",
+    "city": "Vancouver",
+    "qs_rank": 78,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "College of the North Atlantic",
+    "country": "Canada",
+    "city": "Stephenville",
+    "qs_rank": 81,
+    "tuition": null,
+    "has_scholarship": false
+  },
+  {
+    "name": "Crandall University",
+    "country": "Canada",
+    "city": "Moncton",
+    "qs_rank": 93,
+    "tuition": null,
+    "has_scholarship": false
+  }
+]

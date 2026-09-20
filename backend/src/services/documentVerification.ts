@@ -4,9 +4,9 @@ import type { StudentProfile } from "./leadScoring";
 
 const client = new Anthropic({ apiKey: config.anthropicApiKey });
 
-export type DocumentType = "citizenship" | "marksheet" | "ielts_certificate";
+export type DocumentType = "citizenship" | "marksheet" | "ielts_certificate" | "pte_certificate";
 
-export const DOCUMENT_TYPES: DocumentType[] = ["citizenship", "marksheet", "ielts_certificate"];
+export const DOCUMENT_TYPES: DocumentType[] = ["citizenship", "marksheet", "ielts_certificate", "pte_certificate"];
 
 export interface DocumentVerificationResult {
   documentType: DocumentType;
@@ -44,6 +44,15 @@ function buildDocumentSpecificInstructions(documentType: DocumentType, profile?:
 - Is it legible?
 - Does it show the test taker's name, test date, and band scores (Listening/Reading/Writing/Speaking/Overall)?
 - Is the test date within the last 2 years? (IELTS scores are typically considered valid for 2 years — flag if it looks older.)${ieltsLine}`;
+    }
+    case "pte_certificate": {
+      const pteLine = profile
+        ? `\nThe student self-reported a PTE score — check whether the Overall score on the certificate is broadly consistent with what they reported. Flag clearly if there's a mismatch.`
+        : "";
+      return `This should be a PTE Academic score report. Check:
+- Is it legible?
+- Does it show the test taker's name, test date, and scores (Listening/Reading/Speaking/Writing/Overall, scored out of 90 — not IELTS's 0-9 band scale)?
+- Is the test date within the last 2 years? (PTE scores are typically considered valid for 2 years — flag if it looks older.)${pteLine}`;
     }
   }
 }

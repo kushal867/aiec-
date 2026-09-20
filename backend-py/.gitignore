@@ -3,9 +3,17 @@ __pycache__/
 *.pyc
 .env
 data/knowledge.db
+data/knowledge.db-shm
+data/knowledge.db-wal
 data/pdfs/*.pdf
 data/uploads/
 data/.jwt-secret
 data/conversion_model.joblib
 .coverage
 .pytest_cache/
+
+# Fine-tuned model artifacts (large binary files) and generated training
+# data — both are regenerable locally via app/scripts/generate_training_data.py
+# and app/scripts/finetune_chat_model.py, so they shouldn't live in git.
+data/finetuned/
+data/training/

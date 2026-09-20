@@ -290,3 +290,32 @@ def format_courses_for_prompt(courses: list[Any], lang: str = "en") -> str:
                 facts.append(f"intakes in {intake}")
             lines.append(f"{i}. {d['course_name']} in {location} — {', '.join(facts)}")
     return "\n".join(lines)
+
+
+def format_universities_for_prompt(universities: list[Any], lang: str = "en") -> str:
+    """Renders real partner universities (see db.py's `universities` table —
+    separate from `courses` because we don't have a real per-course-per-
+    university pairing, only which universities are genuine partners in a
+    given country) as a numbered list, same plain-sentence style as
+    format_courses_for_prompt."""
+    if not universities:
+        return "(hamro record ma milne university fela parena)" if lang == "ne" else "(no matching universities found)"
+
+    lines = []
+    for i, u in enumerate(universities, start=1):
+        d = u if isinstance(u, dict) else dict(u)
+        bits = []
+        if d.get("city"):
+            bits.append(d["city"])
+        bits.append(d["country"])
+        location = ", ".join(bits)
+        facts = []
+        if d.get("qs_rank"):
+            facts.append(f"QS Rank #{d['qs_rank']}")
+        if d.get("tuition_range"):
+            facts.append(f"tuition {d['tuition_range']}")
+        if d.get("has_scholarship"):
+            facts.append("scholarship available cha" if lang == "ne" else "scholarships available")
+        suffix = f" — {', '.join(facts)}" if facts else ""
+        lines.append(f"{i}. {d['name']} ({location}){suffix}")
+    return "\n".join(lines)

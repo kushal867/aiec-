@@ -8,6 +8,7 @@ from app.services.document_verification import (
     _check_citizenship,
     _check_ielts,
     _check_marksheet,
+    _check_pte,
     verify_document,
 )
 
@@ -45,6 +46,30 @@ def test_ielts_missing_band_scores_is_flagged():
     text = "IELTS Test Report Form. Date: 12/05/2025."
     issues = _check_ielts(text)
     assert any("band score" in issue.lower() for issue in issues)
+
+
+# --- PTE Academic uses a 10-90 overall score, not IELTS's 0-9 band scale —
+# a separate document type/checker rather than trying to force it through
+# the IELTS checker, since "PTE" never appears in a real IELTS TRF and vice
+# versa ---
+def test_pte_score_report_is_recognized():
+    text = (
+        "Pearson Test of English Academic Score Report. Communicative Skills: "
+        "Listening 65 Reading 70 Speaking 68 Writing 72. Overall Score: 69/90. Test Date: 12/05/2025"
+    )
+    assert _check_pte(text) == []
+
+
+def test_pte_missing_score_is_flagged():
+    text = "Pearson Test of English Academic. Date: 12/05/2025."
+    issues = _check_pte(text)
+    assert any("score" in issue.lower() for issue in issues)
+
+
+def test_ielts_certificate_does_not_pass_as_pte():
+    text = "IELTS Test Report Form. Listening 6.0 Reading 6.5 Writing 6.0 Speaking 6.0 Overall Band Score 6.0. Date: 12/05/2025"
+    issues = _check_pte(text)
+    assert any("pte" in issue.lower() for issue in issues)
 
 
 # --- regression: citizenship check was Latin-script-only, silently unable to

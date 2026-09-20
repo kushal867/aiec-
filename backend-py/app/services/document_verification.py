@@ -27,7 +27,7 @@ class OcrUnavailableError(RuntimeError):
     cases need different handling: this one should surface as a real error,
     a corrupt upload should degrade to "unclear"."""
 
-DOCUMENT_TYPES = ["citizenship", "marksheet", "ielts_certificate"]
+DOCUMENT_TYPES = ["citizenship", "marksheet", "ielts_certificate", "pte_certificate"]
 
 _MIN_READABLE_CHARS = 20
 _SUMMARY_LENGTH = 200
@@ -39,6 +39,12 @@ _DATE_PATTERN = re.compile(r"\b\d{1,2}[/\-.]\d{1,2}[/\-.]\d{2,4}\b|\b(19|20)\d{2
 # Band scores are always x.0 or x.5 on a 0-9 scale — narrower than a bare
 # digit match, less likely to false-positive on a candidate/centre number.
 _BAND_SCORE_PATTERN = re.compile(r"\b[0-9]\.[05]\b")
+
+# PTE Academic is scored 10-90 overall (not IELTS's 0-9 band scale), most
+# commonly printed as "Overall Score: 65" or "65/90" — anchored to one of
+# those two contexts rather than a bare two-digit number, which would
+# false-positive on almost anything (dates, candidate IDs, ages).
+_PTE_SCORE_PATTERN = re.compile(r"\b[1-9][0-9]\s*/\s*90\b|overall\s*score\D{0,10}([1-9][0-9])\b", re.IGNORECASE)
 
 # Citizenship documents from Nepal (a large share of this agency's
 # applicants) are issued in Nepali/Devanagari script, not English — an
@@ -195,6 +201,20 @@ def _check_ielts(text: str) -> list[str]:
     return issues
 
 
+def _check_pte(text: str) -> list[str]:
+    issues = []
+    lower = text.lower()
+    if "pte" not in lower and "pearson test of english" not in lower:
+        issues.append("Doesn't look like a PTE Academic score report — 'PTE' not found in the document.")
+    has_skill_labels = any(k in lower for k in ("listening", "reading", "writing", "speaking", "communicative"))
+    has_score = bool(_PTE_SCORE_PATTERN.search(text))
+    if not has_skill_labels or not has_score:
+        issues.append("No overall score (out of 90) detected.")
+    if not _DATE_PATTERN.search(text):
+        issues.append("No test date detected — can't confirm it's within the last 2 years.")
+    return issues
+
+
 def verify_document(
     document_type: str, file_bytes: bytes, mime_type: str, profile: StudentProfile | None = None
 ) -> dict:
@@ -213,6 +233,7 @@ def verify_document(
         "citizenship": lambda: _check_citizenship(text),
         "marksheet": lambda: _check_marksheet(text, profile),
         "ielts_certificate": lambda: _check_ielts(text),
+        "pte_certificate": lambda: _check_pte(text),
     }[document_type]
     issues = checker()
 

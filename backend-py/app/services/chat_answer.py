@@ -2,18 +2,20 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from app.db import get_country_stats, get_db, query_courses
-from app.services.course_matcher import format_courses_for_prompt
+from app.db import get_country_stats, get_db, query_courses, query_universities
+from app.services.course_matcher import format_courses_for_prompt, format_universities_for_prompt
 from app.services.lead_scoring import PRIORITY_COUNTRIES, StudentProfile
 
-# No LLM here — this is deliberate retrieval-only chat (see the migration
-# plan). The reply is either the best-matching passage from the ingested
-# policy PDFs (retrieval.py, unchanged, local embeddings) or a direct lookup
-# against the real course table (course_matcher.py's SQL filtering, which was
-# never Claude-dependent), never a generated/synthesized answer. This is a
-# real capability drop from the previous Claude-backed version: no reasoning
-# about ambiguous questions, no multi-turn awareness, no personalized prose —
-# just "here's the closest matching thing we actually have on file."
+# No LLM here — deliberate retrieval-only chat. `generate_answer` below is no
+# longer what the live /api/chat route calls (see
+# app/services/local_chat_generation.py, which uses a locally fine-tuned
+# model to phrase replies from the same retrieved course/policy data this
+# module gathers). This module now serves two purposes: (1) the small-talk,
+# country-comparison, and course/policy retrieval helpers it defines are
+# reused directly by local_chat_generation.py, and (2) `generate_answer`
+# itself is still used by app/scripts/generate_training_data.py as a cheap,
+# deterministic "gold answer" generator to bootstrap fine-tuning data —
+# useful precisely because it's rigid and never hallucinates.
 
 # Matches the 16 countries the real course dataset covers (see
 # backend-py/data/seed_courses.sql) — used to detect a country mention in the
@@ -373,6 +375,16 @@ _POLICY_INTENT_WORDS = {
     "documents", "eligibility", "eligible",
 }
 
+
+def has_policy_signal(message: str) -> bool:
+    """Shared by generate_answer() (decides whether to show a retrieved
+    chunk in the gold/deterministic reply) and local_chat_generation.py
+    (decides whether to include that chunk in the model's DATA block at
+    all) — the two must agree, or the model is trained on a DATA block
+    shape it won't actually see at inference, and vice versa."""
+    words = set(re.findall(r"[a-zA-Z]+", message.lower()))
+    return bool(words & _POLICY_INTENT_WORDS)
+
 # A literal "$5000"/"$5,000", or a number anchored to budget-signaling
 # context ("budget is 5000", "under 5000 dollars", "afford 3000") — not a
 # bare number anywhere in the message, since that risks grabbing a phone
@@ -490,6 +502,47 @@ def _lookup_courses(message: str, profile: StudentProfile | None) -> tuple[list[
             return sample, "general_sample"
 
     return [], "exact"
+
+
+# Real named universities (db.py's `universities` table — genuine AIEC
+# partner institutions, not the generic course catalog) only get looked up
+# when the student explicitly asks about universities/colleges by name, not
+# on every course-browsing question — "list nursing courses" shouldn't dump
+# a university list, but "which universities are in Canada" should.
+_UNIVERSITY_INTENT_WORDS = {"university", "universities", "college", "colleges", "institution", "institutions"}
+
+_UNIVERSITY_HEADER = {
+    "en": "Here are real partner universities we work with:",
+    "ne": "Yeharu hamro real partner universities haru hun:",
+}
+_NO_UNIVERSITY_DATA = {
+    "en": "(we don't have partner university data on file for this country yet)",
+    "ne": "(yo desh ko partner university data hamro record ma chaina)",
+}
+
+
+def _lookup_universities(message: str) -> list[Any]:
+    """Returns real partner universities matching a detected country, or the
+    top globally-ranked partners if no country was named. Empty list if the
+    message doesn't actually signal university-specific intent, or if we
+    have no real data for the detected country (Japan/South Korea/UK
+    currently have none — see seed_universities.py)."""
+    words = set(re.findall(r"[a-zA-Z]+", message.lower()))
+    if not (words & _UNIVERSITY_INTENT_WORDS):
+        return []
+
+    countries = _detect_countries(message)
+    conn = get_db()
+    # Capped small (5) — this list gets rendered verbatim in both the chat
+    # reply and the fine-tuning DATA block, so it directly drives prompt
+    # length/cost, and a chat answer listing 10 universities is unwieldy
+    # anyway (the live site's own "Top Picks" section shows a similar count).
+    if countries:
+        results = []
+        for country in countries:
+            results.extend(query_universities(conn, country=country, limit=5))
+        return results
+    return query_universities(conn, limit=5)
 
 
 @dataclass
@@ -638,7 +691,22 @@ def generate_answer(latest_message: str, retrieved_chunks: list[Any], profile: S
             for c in courses
         ]
 
-    if retrieved_chunks:
+    universities = _lookup_universities(latest_message)
+    if universities:
+        reply_parts.append(f"{_UNIVERSITY_HEADER[lang]}\n" + format_universities_for_prompt(universities, lang=lang))
+
+    # Regression: a retrieved chunk used to be appended unconditionally
+    # whenever similarity cleared the (fairly loose) threshold, even when the
+    # question was already fully answered by courses/universities above and
+    # the chunk was only loosely related — e.g. "list your universities"
+    # (fully answered by the university section) pulling in an unrelated
+    # I-20-form snippet just because "country" and "document" nudged the
+    # embedding close enough. Only show the chunk when the student's own
+    # wording actually signals they want policy info, or when courses/
+    # universities found nothing else to answer with at all.
+    show_chunk = bool(retrieved_chunks) and (has_policy_signal(latest_message) or not (courses or universities))
+
+    if show_chunk:
         top = retrieved_chunks[0]
         # Source PDFs are FAQ-numbered ("292. What is..."); that's a document
         # formatting artifact, not part of the answer, so it's stripped here

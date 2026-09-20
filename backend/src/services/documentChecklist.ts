@@ -32,6 +32,7 @@ const DOCUMENT_LABELS: Record<DocumentType, string> = {
   citizenship: "Citizenship / ID document",
   marksheet: "Academic transcript / marksheet",
   ielts_certificate: "IELTS certificate",
+  pte_certificate: "PTE certificate",
 };
 
 /**

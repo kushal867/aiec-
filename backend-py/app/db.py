@@ -146,6 +146,29 @@ def _init_schema(conn: sqlite3.Connection) -> None:
         )
         """
     )
+    # Real partner institutions (from AIEC Global's live site sitemap/universities
+    # page), kept as a separate table from `courses` rather than filling in
+    # courses.university — we know these universities are real AIEC partners in a
+    # given country, but not which specific course/fee row above corresponds to
+    # which one, and guessing that pairing would be fabricating a fact this system
+    # otherwise goes out of its way never to invent (see chat_answer.py, claude.ts).
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS universities (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          country TEXT NOT NULL,
+          city TEXT,
+          qs_rank INTEGER,
+          tuition_range TEXT,
+          has_scholarship INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        )
+        """
+    )
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_universities_country ON universities(country)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_universities_qs_rank ON universities(qs_rank)")
+
     conn.execute("CREATE INDEX IF NOT EXISTS idx_courses_ielts ON courses(ielts_required)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_courses_fee ON courses(fee_per_year)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_courses_country ON courses(country)")
@@ -540,6 +563,41 @@ def query_courses(
 def get_course_counts_by_country(conn: sqlite3.Connection) -> list[sqlite3.Row]:
     return conn.execute(
         "SELECT country, COUNT(*) as count FROM courses GROUP BY country ORDER BY country"
+    ).fetchall()
+
+
+# ---------------------------------------------------------------------------
+# Universities (real partner institutions — see schema comment in _init_schema)
+# ---------------------------------------------------------------------------
+
+
+def query_universities(
+    conn: sqlite3.Connection,
+    country: str | None = None,
+    limit: int = 10,
+) -> list[sqlite3.Row]:
+    """Ranked-first (QS rank, when known) then alphabetical — mirrors how the
+    live site's "Top Recommended Universities" surfaces ranked institutions
+    ahead of unranked partner listings."""
+    clauses = []
+    params: dict[str, Any] = {}
+    if country:
+        clauses.append("country = :country")
+        params["country"] = country
+    where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+    safe_limit = min(limit or 10, 30)
+    return conn.execute(
+        f"""SELECT id, name, country, city, qs_rank, tuition_range, has_scholarship
+            FROM universities {where}
+            ORDER BY CASE WHEN qs_rank IS NULL THEN 1 ELSE 0 END, qs_rank ASC, name ASC
+            LIMIT {safe_limit}""",
+        params,
+    ).fetchall()
+
+
+def get_university_counts_by_country(conn: sqlite3.Connection) -> list[sqlite3.Row]:
+    return conn.execute(
+        "SELECT country, COUNT(*) as count FROM universities GROUP BY country ORDER BY country"
     ).fetchall()
 
 
