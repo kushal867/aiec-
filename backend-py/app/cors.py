@@ -13,15 +13,23 @@ from app.config import config
 _ADMIN_PREFIXES = ("/api/admin", "/api/auth")
 
 
-def _origin_for_path(path: str) -> str:
+def _origin_for_path(path: str, request_origin: str | None) -> str:
     if path.startswith(_ADMIN_PREFIXES):
         return config.admin_allowed_origin
-    return config.allowed_origin
+
+    allowed = config.allowed_origins
+    if "*" in allowed:
+        return "*"
+    if request_origin and request_origin in allowed:
+        return request_origin
+    # No match (or no Origin header, e.g. curl/server-to-server) — fall back
+    # to the first configured origin so the header is never blank.
+    return allowed[0]
 
 
 class PathScopedCORSMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next) -> Response:
-        origin = _origin_for_path(request.url.path)
+        origin = _origin_for_path(request.url.path, request.headers.get("origin"))
 
         if request.method == "OPTIONS":
             response = Response(status_code=204)

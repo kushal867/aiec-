@@ -40,7 +40,13 @@ class Config:
         self.embedding_model = os.environ.get("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
         self.database_path = Path(os.environ.get("DATABASE_PATH", "./data/knowledge.db")).resolve()
         self.port = int(os.environ.get("PORT", "3001"))
-        self.allowed_origin = os.environ.get("ALLOWED_ORIGIN", "*")
+        # Comma-separated list — supports multiple public frontends (e.g. the
+        # main site plus a staging/app subdomain) sharing the same backend.
+        # cors.py picks whichever entry matches the request's actual Origin
+        # header, falling back to the first entry for non-browser requests.
+        self.allowed_origins = [
+            o.strip() for o in os.environ.get("ALLOWED_ORIGIN", "*").split(",") if o.strip()
+        ] or ["*"]
         # Separate from allowed_origin: the CRM dashboard is a different internal
         # app on its own origin (not the client's public site), so it needs its
         # own CORS allowance rather than sharing the public widget's origin.

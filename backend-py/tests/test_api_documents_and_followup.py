@@ -37,7 +37,7 @@ def test_document_upload_end_to_end(client, seeded_courses):
     assert r.status_code == 200
     body = r.json()
     assert body["status"] == "valid"
-    assert body["checklist"]["missing"] == ["citizenship", "marksheet"]
+    assert body["checklist"]["missing"] == ["citizenship", "marksheet", "pte_certificate"]
 
 
 def test_document_upload_without_a_profile_yet_still_persists(client):

@@ -58,7 +58,7 @@ def test_followup_suggestion_no_urgent_action_when_on_track_and_complete(test_db
             json.dumps(
                 [
                     {"documentType": t, "filename": "x", "status": "valid", "issues": [], "extractedSummary": "", "uploadedAt": "2025-01-01"}
-                    for t in ("citizenship", "marksheet", "ielts_certificate")
+                    for t in ("citizenship", "marksheet", "ielts_certificate", "pte_certificate")
                 ]
             ),
             student["id"],

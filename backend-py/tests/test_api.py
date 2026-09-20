@@ -180,7 +180,7 @@ def test_public_status_lookup_never_exposes_internal_fields(client, test_db):
 def test_documents_checklist_for_unknown_session_is_all_missing_not_an_error(client):
     r = client.get("/api/documents/checklist/never-existed")
     assert r.status_code == 200
-    assert r.json()["checklist"]["missing"] == ["citizenship", "marksheet", "ielts_certificate"]
+    assert r.json()["checklist"]["missing"] == ["citizenship", "marksheet", "ielts_certificate", "pte_certificate"]
 
 
 def test_chat_returns_real_courses_for_a_known_query(client, seeded_courses):
